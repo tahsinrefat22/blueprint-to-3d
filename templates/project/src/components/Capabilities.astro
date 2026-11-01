@@ -1,0 +1,35 @@
+---
+import { capabilities } from "../spec";
+import Pill from "./ui/Pill.astro";
+import SectionHead from "./ui/SectionHead.astro";
+
+const th = "border-b border-line bg-stage px-3.5 py-2.5 text-left font-mono text-xs font-medium tracking-[0.06em] text-muted uppercase";
+const td = "border-b border-line px-3.5 py-3 align-top";
+---
+
+<section class="grid gap-4">
+  <SectionHead eyebrow="What it can do" title="Capabilities, as designed">
+    Design predictions only, until hardware is built and measured.
+  </SectionHead>
+  <div class="overflow-x-auto rounded-xl border border-line bg-panel">
+    <table class="w-full min-w-[680px] border-collapse text-sm">
+      <thead>
+        <tr><th class={th}>Capability</th><th class={th}>How it does it</th><th class={th}>Status</th></tr>
+      </thead>
+      <tbody>
+        {
+          capabilities.map((c) => (
+            <tr>
+              <td class={`${td} font-semibold whitespace-nowrap`}>{c.name}</td>
+              <td class={td}>{c.how}</td>
+              <td class={td}>
+                <Pill kind={c.status} />
+                {"note" in c && c.note && <small class="mt-1 block text-[13px] text-muted">{c.note}</small>}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

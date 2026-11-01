@@ -1,0 +1,102 @@
+# three.js Patterns (Phase 8)
+
+These techniques come from the DFLY reference, modernised. The template already implements the generic ones in `src/model/`. This file explains how to use them, and how to build project modules that reach DFLY's depth.
+
+## Contents
+1. Frames and units
+2. Building a module
+3. Primitives
+4. Mechanisms
+5. Deforming surfaces
+6. Explode groups
+7. Labelled grid
+8. Picking, selection, labels
+9. Performance rules
+10. Stage 1 vs detail stages
+
+## 1. Frames and units
+
+- Use **millimetres** throughout, with the body frame stated in the build plan. The default is x forward, y left, z up (`camera.up = +z`).
+- For repeated or tilted modules, use a `LocalFrame(origin, e1, e2, e3)` and write geometry in local coordinates. DFLY's wing units used a frame tilted 30° about y (`AX` hinge axis, `WV` up in the stroke plane, `YV` outboard). The constructor rejects left-handed axes, because a mirrored basis silently breaks rotations.
+- Mirror left and right with a `side = ±1` factor in the local coordinates, never with duplicated code.
+- Keep **station tables** (named positions along an axis, DFLY's `S_`) in the spec. Modules read them.
+
+## 2. Building a module
+
+```ts
+export function buildArm({ scene, registry, explode }: ModuleContext): ModuleHandle {
+  const holder = explode.holder("arm", new Vector3(0, 80, 40), scene); // explode vector
+  const mat = registry.material("upperArm", { metalness: 0.4 });      // tinted by catalogue colour
+  const link = createBar(mat, v("upperArmRadius"));
+  holder.add(registry.add(link, "upperArm"));                          // pickable + grid representative
+  const anchors = { tip: new Vector3() };
+  const s = { a: new Vector3(), b: new Vector3() };                    // scratch, reused every frame
+  return {
+    anchors,
+    update(state) {
+      // read state.time, state.controls[...], state.calc[...]; position meshes; no allocations
+    },
+  };
+}
+```
+
+- Use `registry.add(mesh, key, representative)`. For repeated parts, pass `representative = true` only for the first instance (DFLY's `rep` flag), so the grid shows one of each.
+- Mark meshes whose geometry deforms per frame with `mesh.userData.dynamic = true`. The grid then clones their geometry instead of sharing it.
+- Put a screen-label point in `anchors`, and reference it in `model/project.ts → tags`.
+
+## 3. Primitives (`primitives.ts`)
+
+- **`createBar(material, radius)` + `setBar(mesh, p1, p2)`:** one shared unit cylinder, stretched between two points each frame. Use it for rods, spars, links, rails, legs and pushrods.
+- **`boxGeometry`, `cylinderGeometry`, `sphereGeometry`:** cached by parameters. A cylinder runs along local +y. Rotate it with `quaternion.setFromUnitVectors(AXIS_Y, dir)`.
+- **`gearGeometry(teeth, module, face)`:** trapezoidal tooth outline, bore, lightening holes above 20 teeth, extruded along local z. Put the mesh in a pivot `Group` oriented to the shaft axis, and spin the mesh with `rotation.z`. For a page where tooth form matters, add an involute profile function.
+- For anything else (brackets, plates with pockets, airfoils), build a `Shape` with holes and use `ExtrudeGeometry`, or use `LatheGeometry` for turned parts. Cache by parameters.
+- **Detail that earns its place:** fastener heads, bearing races, PCB components as boxes, connector housings, chamfers on visible edges. Model what a builder would want to see. Skip invisible internals unless the explode view reveals them.
+
+## 4. Mechanisms: solve them, never fake them
+
+- **Linkages:** solve exactly from link lengths in `src/engine/formulas/`, and use the same solver in the model and the calculations. See `linkage.ts`: circle-circle intersection with branch selection, plus a sweep for stroke and velocity ratio.
+- **Gear trains:** each gear's angle = input angle × the ratio up to that gear × a sign that alternates per mesh. Offset one gear by half a tooth (`π / z`) so the teeth visually mesh.
+- **Belts, screws, cams:** use the kinematic relation (pitch, lead, cam profile) from the engine.
+- **Adjustments:** model them as moving a pivot. DFLY rotated the crank pivot about the intermediate shaft for stroke offset, with a 1.70 ratio.
+- **Phase and timing controls:** expose them as `viewerControls` (DFLY: fore-hind phase, stroke offsets, split-cycle yaw).
+- **Display speed:** animate real rates divided by `project.displaySlowdown`. The speed note shows the factor and the real rate.
+
+## 5. Deforming surfaces
+
+DFLY's wing membranes:
+1. Define the planform as a function (root taper → constant chord → elliptical tip). Build a `ShapeGeometry` from sampled points.
+2. Store each vertex's planform coordinates `(r, chord)` once.
+3. Each frame, map each vertex through the current local basis: spar direction (flap angle) and chord direction (pitch angle). Write the results into the existing position attribute and set `needsUpdate`.
+4. Don't recompute bounding volumes every frame. Do it only before picking, or set a generous static bounding sphere once.
+
+## 6. Explode groups (`explode.ts`)
+
+- Define groups **outside-in** in `model/project.ts`: what a person would remove first gets `order: 1`. The frame gets `order: 99` and never moves.
+- Each group's caption is a sentence a reader learns from. It names the parts, gives key numbers, and says what's open. For example, DFLY: "Battery out: 2S 300 mAh, 18.4 g, on its slide 33 mm below the hinges…".
+- Each holder has its own explode vector, pointing away from the assembly along the direction the part would actually come out. Include a vertical component, so separation reads from the 3/4 view.
+
+## 7. Labelled grid (`grid.ts`)
+
+It's generic. It clones representatives with their world matrices baked in, scales each one to fit its cell, chooses the column count for the viewport, and fits the camera from the FOV. Labels show name, count × mass, the main file and "+N more". You only need to:
+- register representatives correctly
+- keep `parts.files` meaningful
+- choose `gridCentre` near the assembly
+
+## 8. Picking, selection, labels
+
+- Picking uses a 5 px click-vs-drag threshold. Hover shows the part name, and a click selects it: the part's materials are highlighted, the info panel opens, and its legend chip is pressed.
+- The info panels are rendered at build time from the catalogue (`Viewer.astro`), so there's no `innerHTML` at runtime.
+- Screen tags (`labels.ts`) hide when behind the camera or outside the viewport.
+
+## 9. Performance rules
+
+- The render loop is on-demand (`model/index.ts`). It runs while playing, easing, flying or damping, and stops when idle or off-screen. Any new interaction must call `invalidate()`.
+- No `new` inside `update()`. Put scratch vectors at module or closure level.
+- Share geometry through the cache. Use one material per part and visual variant, registered through the registry.
+- Pixel ratio is capped at 2. Lighting is PMREM `RoomEnvironment` plus one key light; add no extra lights without a reason.
+- Keep triangle counts sensible: 12–32 segments for cylinders, depending on size on screen.
+
+## 10. Stage 1 vs detail stages
+
+- **Stage 1 (envelopes):** every catalogue part as a correctly sized and placed simple volume. Use boxes and cylinders, sized from datasheet dimensions, at the build-plan positions. Mechanisms already move using the real solver. The goal is to verify layout, mass, CG, clearances and explode order before spending effort on detail. Say so on the page (DFLY: "drawn at envelope level, not detailed yet").
+- **Detail stages:** one subsystem per stage. Replace envelopes with real geometry (profiles, holes, fasteners, gear teeth, PCBs), add the remaining motion, refine materials (metalness and roughness by material: anodised aluminium, POM, carbon, PCB green), and update captions and descriptions. Run the checks and screenshots after each stage.

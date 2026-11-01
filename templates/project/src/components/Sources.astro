@@ -1,0 +1,37 @@
+---
+import { sources } from "../spec";
+import type { Source } from "../spec/schema";
+import SectionHead from "./ui/SectionHead.astro";
+
+const list: readonly Source[] = sources;
+---
+
+<section class="grid gap-4">
+  <SectionHead eyebrow="Sources" title="Where the numbers come from">
+    Every source opened during research, with the date it was accessed. Spec values cite these ids. Mirror of
+    docs/sources.md.
+  </SectionHead>
+  <ol class="m-0 grid list-none gap-2 rounded-xl border border-line bg-panel p-5 text-sm">
+    {
+      list.map((s) => (
+        <li class="grid grid-cols-[48px_minmax(0,1fr)] gap-2">
+          <span class="font-mono text-accent">{s.id}</span>
+          <span>
+            {s.url ? (
+              <a class="text-ink underline decoration-line underline-offset-2 hover:text-accent" href={s.url} rel="noopener" target="_blank">
+                {s.title}
+              </a>
+            ) : (
+              s.title
+            )}
+            <small class="block font-mono text-xs text-muted">
+              {s.kind}
+              {s.accessed ? ` · accessed ${s.accessed}` : ""}
+              {s.note ? ` · ${s.note}` : ""}
+            </small>
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</section>

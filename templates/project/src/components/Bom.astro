@@ -1,0 +1,100 @@
+---
+/** Bill of materials with country-aware sourcing and landed totals per currency. */
+import { formatValue } from "../engine/graph";
+import { bom, currencyNote, project } from "../spec";
+import SectionHead from "./ui/SectionHead.astro";
+
+const totals = new Map<string, { parts: number; shipping: number; duty: number }>();
+for (const line of bom) {
+  const t = totals.get(line.currency) ?? { parts: 0, shipping: 0, duty: 0 };
+  t.parts += line.qty * line.unitPrice;
+  t.shipping += line.shipping ?? 0;
+  t.duty += line.duty ?? 0;
+  totals.set(line.currency, t);
+}
+const th = "border-b border-line bg-stage px-3.5 py-2.5 text-left font-mono text-xs font-medium tracking-[0.06em] text-muted uppercase";
+const td = "border-b border-line px-3.5 py-2.5 align-top";
+---
+
+<section class="grid gap-4">
+  <SectionHead eyebrow="Bill of materials" title="Parts, suppliers and cost">
+    {
+      bom.length === 0
+        ? "Filled in during sourcing (Phase 5): every line with a real link, a dated price and a backup source."
+        : `Budget mode: ${project.budgetMode}. Sourced for ${project.country || "the user's country"} first, then the nearest countries. Prices are dated; check them before ordering.`
+    }
+  </SectionHead>
+  {
+    bom.length > 0 && (
+      <>
+        <div class="overflow-x-auto rounded-xl border border-line bg-panel">
+          <table class="w-full min-w-[860px] border-collapse text-sm">
+            <thead>
+              <tr>
+                <th class={th}>Part</th>
+                <th class={th}>Qty</th>
+                <th class={th}>Supplier</th>
+                <th class={th}>Unit price</th>
+                <th class={th}>Stock</th>
+                <th class={th}>Backup</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bom.map((line) => (
+                <tr>
+                  <td class={td}>
+                    <b class="font-semibold">{line.manufacturer} {line.partNumber}</b>
+                    <small class="block text-xs text-muted">{line.part}</small>
+                    {line.notes && <small class="block text-xs text-warn">{line.notes}</small>}
+                  </td>
+                  <td class={`${td} font-mono`}>{line.qty}</td>
+                  <td class={td}>
+                    <a class="text-accent underline-offset-2 hover:underline" href={line.url} rel="noopener" target="_blank">
+                      {line.supplier}
+                    </a>
+                    <small class="block text-xs text-muted">{line.supplierCountry}</small>
+                  </td>
+                  <td class={`${td} font-mono whitespace-nowrap`}>
+                    {formatValue(line.unitPrice, 2)} {line.currency}
+                    <small class="block text-xs text-muted">{line.priceDate}</small>
+                  </td>
+                  <td class={td}>{line.stock}</td>
+                  <td class={td}>
+                    {line.backup ? (
+                      <a class="text-accent underline-offset-2 hover:underline" href={line.backup.url} rel="noopener" target="_blank">
+                        {line.backup.supplier}
+                      </a>
+                    ) : (
+                      <span class="text-muted">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div class="flex flex-wrap items-start gap-4">
+          {[...totals].map(([currency, t]) => (
+            <div class="grid gap-1 rounded-[10px] border border-line bg-panel px-4 py-3.5 text-[13.5px]">
+              <div class="text-muted">Landed total ({currency})</div>
+              <div class="font-display text-[28px] leading-tight font-semibold tabular-nums">
+                {formatValue(t.parts + t.shipping + t.duty, 2)}
+              </div>
+              <div class="font-mono text-xs text-muted">
+                parts {formatValue(t.parts, 2)} · shipping {formatValue(t.shipping, 2)} · duty {formatValue(t.duty, 2)}
+              </div>
+            </div>
+          ))}
+          <a
+            href="bom.csv"
+            download
+            class="rounded-md border border-line bg-panel px-2.5 py-1.5 font-mono text-xs font-medium text-ink hover:border-accent hover:text-accent"
+          >
+            Download CSV
+          </a>
+        </div>
+        {currencyNote && <p class="m-0 text-[13px] text-muted">{currencyNote}</p>}
+      </>
+    )
+  }
+</section>

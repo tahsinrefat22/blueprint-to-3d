@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens only: raw values per theme, mapped to Tailwind utilities in @theme below.
+ * Light by default; dark follows the OS unless data-theme="light"; data-theme="dark" forces dark.
+ * The 3D scene reads --accent and --line from JS (src/model/theme.ts).
+ */
+:root {
+  --paper: #eef2f1;
+  --panel: #ffffff;
+  --ink: #132227;
+  --muted: #566a70;
+  --line: #d2dcdb;
+  --accent: #0e7c83;
+  --accent-soft: #d5eeee;
+  --stage: #f6f9f8;
+  --good: #2d7f4a;
+  --good-soft: #dcefe2;
+  --warn: #9a6210;
+  --warn-soft: #f6e8cf;
+  --bad: #b33a26;
+  --bad-soft: #f6dcd6;
+  --idle: #6f7d81;
+  --idle-soft: #e6ebea;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d1416;
+    --panel: #141e21;
+    --ink: #e3ecec;
+    --muted: #93a6aa;
+    --line: #25353a;
+    --accent: #45c4c9;
+    --accent-soft: #163538;
+    --stage: #10191c;
+    --good: #5cc07f;
+    --good-soft: #173324;
+    --warn: #e0a548;
+    --warn-soft: #3a2b12;
+    --bad: #ef7a63;
+    --bad-soft: #3d1d17;
+    --idle: #8d9ca0;
+    --idle-soft: #1d282b;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #0d1416;
+  --panel: #141e21;
+  --ink: #e3ecec;
+  --muted: #93a6aa;
+  --line: #25353a;
+  --accent: #45c4c9;
+  --accent-soft: #163538;
+  --stage: #10191c;
+  --good: #5cc07f;
+  --good-soft: #173324;
+  --warn: #e0a548;
+  --warn-soft: #3a2b12;
+  --bad: #ef7a63;
+  --bad-soft: #3d1d17;
+  --idle: #8d9ca0;
+  --idle-soft: #1d282b;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-stage: var(--stage);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-idle: var(--idle);
+  --color-idle-soft: var(--idle-soft);
+}
+
+@theme {
+  --font-display: "Saira Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}

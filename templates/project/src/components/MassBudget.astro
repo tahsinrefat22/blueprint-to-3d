@@ -1,0 +1,83 @@
+---
+/** Mass budget: total against target, per-part bars (amber = estimated/assumed, grey = reserve), history. */
+import { formatValue } from "../engine/graph";
+import { massRows, totalMassG } from "../engine/mass";
+import { massHistory, parts, v, values } from "../spec";
+import SectionHead from "./ui/SectionHead.astro";
+
+const rows = massRows(parts, values);
+const total = totalMassG(rows);
+const target = v("massTarget");
+const scaleMax = Math.max(total, target) * 1.1;
+const rowMax = Math.max(...rows.map((r) => r.totalG), 1);
+const histMax = Math.max(...massHistory.map((h) => h.massG), target) * 1.1;
+const pct = (x: number, of: number) => `${((x / of) * 100).toFixed(2)}%`;
+const barTone = (r: (typeof rows)[number]) =>
+  r.reserve ? "bg-idle opacity-70" : r.confidence === "estimated" || r.confidence === "assumed" ? "bg-warn" : "bg-accent opacity-85";
+---
+
+<section class="grid gap-4">
+  <SectionHead eyebrow="Where the weight goes" title={`Mass budget: ${formatValue(total, 1)} g against ${formatValue(target, 0)} g`}>
+    Every row comes from the part catalogue; the target is a spec value with its own source.
+  </SectionHead>
+  <div class="grid gap-5.5 rounded-xl border border-line bg-panel p-5">
+    <div>
+      <div class="relative h-7.5 rounded-md bg-idle-soft" role="img" aria-label={`Total ${formatValue(total, 1)} g against ${target} g`}>
+        <div class="absolute inset-y-0 left-0 rounded-md bg-accent" style={`width:${pct(total, scaleMax)}`}></div>
+        <div class="absolute -inset-y-1.5 w-0 border-l-2 border-dashed border-ink" style={`left:${pct(target, scaleMax)}`}>
+          <span class="absolute top-full mt-1 -translate-x-full pr-1 font-mono text-[11px] whitespace-nowrap">
+            target {formatValue(target, 0)} g · now {formatValue(total, 1)} g
+          </span>
+        </div>
+      </div>
+      <div class="h-5.5"></div>
+    </div>
+
+    <div class="grid gap-1.5">
+      {
+        rows.map((r) => (
+          <div class="grid grid-cols-[minmax(0,130px)_minmax(0,1fr)_48px] items-center gap-2 text-[12.5px] min-[520px]:grid-cols-[minmax(0,260px)_minmax(0,1fr)_56px] min-[520px]:gap-3 min-[520px]:text-[13.5px]">
+            <div class="truncate" title={r.name}>
+              {r.name}
+              {r.count > 1 ? ` (×${r.count})` : ""}
+            </div>
+            <div class="relative h-3.5 rounded-[3px] bg-idle-soft">
+              <div class={`absolute inset-y-0 left-0 rounded-[3px] ${barTone(r)}`} style={`width:${pct(r.totalG, rowMax)}`} />
+            </div>
+            <div class="text-right font-mono tabular-nums">{formatValue(r.totalG, 1)}</div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="m-0 text-[13px] text-muted">
+      Amber: estimated or assumed mass. Grey: reserve held for later. Source: <code class="font-mono text-accent"
+        >src/spec/parts.ts</code
+      > and <code class="font-mono text-accent">src/spec/values.ts</code>.
+    </p>
+
+    <div class="grid gap-1.5">
+      <h3 class="m-0 font-display text-base font-semibold">How the mass got here</h3>
+      {
+        massHistory.map((h, i) => (
+          <div class="grid grid-cols-[minmax(0,100px)_minmax(0,1fr)_50px] items-center gap-2 text-[12.5px] min-[520px]:grid-cols-[minmax(0,150px)_minmax(0,1fr)_60px] min-[520px]:gap-3 min-[520px]:text-[13.5px]">
+            <div>
+              {h.label}
+              <small class="block text-[11.5px] leading-tight text-muted">{h.note}</small>
+            </div>
+            <div class="relative h-3 rounded-[3px] bg-idle-soft">
+              <div
+                class:list={[
+                  "absolute inset-y-0 left-0 rounded-[3px]",
+                  h.massG > target ? "bg-bad" : i === massHistory.length - 1 ? "bg-accent" : "bg-idle",
+                ]}
+                style={`width:${pct(h.massG, histMax)}`}
+              />
+              <div class="absolute -inset-y-1 border-l-2 border-dashed border-ink" style={`left:${pct(target, histMax)}`} />
+            </div>
+            <div class="text-right font-mono">{formatValue(h.massG, 1)} g</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

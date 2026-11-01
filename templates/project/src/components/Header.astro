@@ -1,0 +1,31 @@
+---
+import { formatValue } from "../engine/graph";
+import { massRows, totalMassG } from "../engine/mass";
+import { parts, project, v, values } from "../spec";
+
+const mass = totalMassG(massRows(parts, values));
+const chips = [
+  ["Phase", project.phase],
+  ["Stage", project.stage],
+  ["As of", project.asOf],
+  ["Mass", `${formatValue(mass, 1)} g of ${formatValue(v("massTarget"), 0)}`],
+  ["Hardware measured", project.hardwareMeasured],
+] as const;
+---
+
+<header class="grid gap-2.5">
+  <div class="font-mono text-xs tracking-[0.08em] text-muted uppercase">{project.eyebrow}</div>
+  <h1 class="m-0 font-display text-[clamp(30px,5vw,46px)] leading-tight font-bold tracking-[0.01em] text-balance">
+    {project.title}
+  </h1>
+  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-2">
+    {
+      chips.map(([k, val]) => (
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-2.5 py-0.5 font-mono text-xs text-muted">
+          {k} <b class="font-medium text-ink">{val}</b>
+        </span>
+      ))
+    }
+  </div>
+  <p class="m-0 max-w-[72ch] text-muted">{project.lede}</p>
+</header>

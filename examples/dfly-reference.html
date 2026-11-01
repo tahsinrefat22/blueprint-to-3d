@@ -1,0 +1,730 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>DFLY Build Status For Skill</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{
+  --paper:#eef2f1; --panel:#ffffff; --ink:#132227; --muted:#566a70; --line:#d2dcdb;
+  --accent:#0e7c83; --accent-soft:#d5eeee; --stage:#f6f9f8;
+  --good:#2d7f4a; --good-soft:#dcefe2; --warn:#9a6210; --warn-soft:#f6e8cf; --bad:#b33a26; --bad-soft:#f6dcd6; --idle:#6f7d81; --idle-soft:#e6ebea;
+  --f-display:"Saira Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0d1416; --panel:#141e21; --ink:#e3ecec; --muted:#93a6aa; --line:#25353a;
+  --accent:#45c4c9; --accent-soft:#163538; --stage:#10191c;
+  --good:#5cc07f; --good-soft:#173324; --warn:#e0a548; --warn-soft:#3a2b12; --bad:#ef7a63; --bad-soft:#3d1d17; --idle:#8d9ca0; --idle-soft:#1d282b;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d1416; --panel:#141e21; --ink:#e3ecec; --muted:#93a6aa; --line:#25353a;
+  --accent:#45c4c9; --accent-soft:#163538; --stage:#10191c;
+  --good:#5cc07f; --good-soft:#173324; --warn:#e0a548; --warn-soft:#3a2b12; --bad:#ef7a63; --bad-soft:#3d1d17; --idle:#8d9ca0; --idle-soft:#1d282b;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:44px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:.01em}
+h2{font-size:26px;font-weight:600}
+h3{font-size:18px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:72ch;color:var(--muted)}
+header{display:grid;gap:10px}
+.head-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted)}
+.chip b{color:var(--ink);font-weight:500}
+section{display:grid;gap:16px}
+.sec-head{display:grid;gap:6px}
+.sec-head p{max-width:72ch;color:var(--muted)}
+.viewer{display:grid;grid-template-columns:minmax(0,1fr) 340px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.stagebox{position:relative;min-width:0;background:radial-gradient(120% 90% at 50% 40%,var(--stage),var(--paper))}
+#viewport{position:relative;width:100%;height:640px;touch-action:none;overflow:hidden}
+#viewport.gridmode{height:760px}
+#viewport canvas{display:block;width:100%;height:100%;cursor:grab}
+#viewport canvas:active{cursor:grabbing}
+.tag{position:absolute;transform:translate(-50%,-50%);font-family:var(--f-mono);font-size:11px;padding:1px 6px;border-radius:4px;background:var(--panel);color:var(--ink);border:1px solid var(--line);pointer-events:none;white-space:nowrap}
+.tag.fwd{color:var(--accent);border-color:var(--accent)}
+.glabel{position:absolute;transform:translate(-50%,0);text-align:center;pointer-events:none;line-height:1.3;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+.glabel b{display:block;font:600 12px var(--f-body)}
+.glabel span{display:block;color:var(--muted);font-family:var(--f-mono);font-size:10.5px}
+.glabel code{display:block;font-family:var(--f-mono);font-size:10px;color:var(--accent);overflow-wrap:anywhere}
+#tip{position:absolute;pointer-events:none;font-size:12px;padding:4px 8px;border-radius:6px;background:var(--ink);color:var(--paper);white-space:nowrap;transform:translate(10px,10px);z-index:5}
+.views{position:absolute;left:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;z-index:4}
+.views button,.btn{font:500 12px var(--f-mono);letter-spacing:.03em;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.btn.primary:hover{color:var(--panel);filter:brightness(1.08)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.speed{position:absolute;right:12px;bottom:10px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.side{border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.side .blk{padding:16px;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.ctl{display:grid;gap:4px}
+.ctl label{display:flex;justify-content:space-between;font-size:13px;font-weight:500}
+.ctl label span{font-family:var(--f-mono);color:var(--accent);font-weight:400}
+.ctl small{color:var(--muted);font-size:12px;line-height:1.4}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stepper .count{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.stepper .cap{font-size:13.5px;min-height:3.2em}
+.info{display:grid;gap:8px}
+.info .nm{font-family:var(--f-display);font-size:19px;font-weight:600;line-height:1.15}
+.info .ms{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.info p{font-size:13.5px}
+.info .empty{color:var(--muted);font-size:13.5px}
+.info .where{font-size:12px;color:var(--muted);margin-top:2px}
+.info ul.files{margin:0;padding:0;list-style:none;display:grid;gap:3px}
+.info ul.files code{font-family:var(--f-mono);font-size:11.5px;color:var(--accent);overflow-wrap:anywhere}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.legend button{font:12px var(--f-body);padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.legend button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.pill{display:inline-block;font:500 11px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.s-settled{background:var(--good-soft);color:var(--good)}
+.s-open{background:var(--warn-soft);color:var(--warn)}
+.s-problem{background:var(--bad-soft);color:var(--bad)}
+.s-future{background:var(--idle-soft);color:var(--idle)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:4px;align-content:start}
+.tile .k{font-size:12.5px;color:var(--muted)}
+.tile .v{font-family:var(--f-display);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .v small{font-size:15px;color:var(--muted);font-weight:500}
+.tile .n{font-size:12.5px;color:var(--muted)}
+.tile.warn{border-color:var(--warn)}
+.tile.warn .v{color:var(--warn)}
+.mass{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:22px}
+.track{position:relative;height:30px;border-radius:6px;background:var(--idle-soft)}
+.fillbar{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--accent)}
+.mark{position:absolute;top:-6px;bottom:-6px;width:0;border-left:2px dashed var(--ink)}
+.mark span{position:absolute;top:100%;left:0;margin-top:4px;font:11px var(--f-mono);white-space:nowrap;color:var(--ink)}
+.mark.alt{border-left-color:var(--good)}
+.mark.alt span{color:var(--good)}
+.marks-space{height:22px}
+.bars{display:grid;gap:6px}
+.brow{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr) 56px;gap:12px;align-items:center;font-size:13.5px}
+.brow .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow .bt{position:relative;height:14px;background:var(--idle-soft);border-radius:3px}
+.brow .bf{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:3px;opacity:.85}
+.brow.warn .bf{background:var(--warn);opacity:1}
+.brow.idle .bf{background:var(--idle);opacity:.7}
+.brow .val{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted)}
+.hist{display:grid;gap:6px}
+.hrow{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 60px;gap:12px;align-items:center;font-size:13.5px}
+.hrow .hb{position:relative;height:12px;background:var(--idle-soft);border-radius:3px}
+.hrow .hf{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--idle)}
+.hrow.over .hf{background:var(--bad)}
+.hrow.now .hf{background:var(--accent)}
+.hrow .hm{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--ink)}
+.hrow .val{font-family:var(--f-mono);text-align:right}
+.hrow small{display:block;color:var(--muted);font-size:11.5px;line-height:1.2}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--stage)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:12px;align-content:start}
+.card ul,.card ol{margin:0;padding-left:20px;display:grid;gap:7px;font-size:14px}
+.card.problem{border-color:var(--warn)}
+code.p{font-family:var(--f-mono);font-size:12.5px;color:var(--accent)}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:900px){
+  .viewer{grid-template-columns:1fr}
+  .side{border-left:0;border-top:1px solid var(--line)}
+  #viewport{height:460px}
+  #viewport.gridmode{height:900px}
+  .two{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .brow{grid-template-columns:minmax(0,130px) minmax(0,1fr) 48px;font-size:12.5px;gap:8px}
+  .hrow{grid-template-columns:minmax(0,100px) minmax(0,1fr) 50px;font-size:12.5px;gap:8px}
+  #viewport{height:400px}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Dragonfly-inspired four-wing flapping robot</div>
+    <h1>DFLY, as designed today</h1>
+    <div class="head-row">
+      <span class="chip">Phase <b>1, Design</b></span>
+      <span class="chip">Stage <b>1 layout done, Stage 2 next</b></span>
+      <span class="chip">As of <b>29 Oct 2026</b></span>
+      <span class="chip">Mass <b>109.9 g of 110</b></span>
+      <span class="chip">Hardware measured <b>none yet</b></span>
+    </div>
+    <p class="lede">Drag to orbit, scroll to zoom. Play the flapping, take the robot apart one layer at a time, or press Explode with labels to lay every part out in a grid with its name and the repo files that hold its numbers. Click any part for details. Positions follow the Stage 1 layout envelopes; parts are drawn at envelope level, not detailed yet.</p>
+  </header>
+
+  <section aria-label="3D model">
+    <div class="viewer">
+      <div class="stagebox">
+        <div id="viewport" aria-label="Interactive 3D model of DFLY"></div>
+        <div class="views" role="group" aria-label="Camera views">
+          <button data-view="iso">3/4 view</button>
+          <button data-view="front">Front</button>
+          <button data-view="side">Side</button>
+          <button data-view="top">Top</button>
+        </div>
+        <div class="speed" id="speedNote">Shown about 17 times slower than real (16.8 Hz)</div>
+        <div id="tip" hidden></div>
+      </div>
+      <div class="side">
+        <div class="blk">
+          <div class="row">
+            <button class="btn primary" id="play" aria-pressed="false">Play flapping</button>
+            <button class="btn" id="resetCtl">Reset controls</button>
+          </div>
+          <div class="ctl">
+            <label for="phase">Fore-hind phase <span id="phaseVal">180°</span></label>
+            <input type="range" id="phase" min="0" max="360" step="5" value="180">
+            <small>The research variable. 180° is counter-stroking, as dragonflies hover; 0° is in phase.</small>
+          </div>
+          <div class="ctl">
+            <label for="offL">Stroke offset, w1 left fore <span id="offLVal">0°</span></label>
+            <input type="range" id="offL" min="-6" max="6" step="0.5" value="0">
+          </div>
+          <div class="ctl">
+            <label for="offR">Stroke offset, w2 right fore <span id="offRVal">0°</span></label>
+            <input type="range" id="offR" min="-6" max="6" step="0.5" value="0">
+            <small>Servo-set on the forewings, ±6° working, ±6.5° limit. Hindwings are set by hand with a screw.</small>
+          </div>
+          <div class="ctl">
+            <label for="yaw">Yaw command (split-cycle) <span id="yawVal">0</span></label>
+            <input type="range" id="yaw" min="-1" max="1" step="0.1" value="0">
+            <small>Left and right motors speed up on opposite halves of each beat. Exaggerated here; firmware caps ε at 0.06.</small>
+          </div>
+        </div>
+        <div class="blk stepper">
+          <div class="row" style="justify-content:space-between">
+            <h3>Take it apart</h3>
+            <span class="count" id="stepCount">0 / 11</span>
+          </div>
+          <div class="row">
+            <button class="btn" id="prev">Put back</button>
+            <button class="btn primary" id="next">Remove next</button>
+          </div>
+          <div class="row">
+            <button class="btn" id="all">Explode all</button>
+            <button class="btn" id="grid" aria-pressed="false">Explode with labels</button>
+          </div>
+          <p class="cap" id="stepCap">Fully assembled. Press Remove next to take DFLY apart one layer at a time.</p>
+        </div>
+        <div class="blk info" id="info" aria-live="polite">
+          <p class="empty">Click a part in the model, or pick one below.</p>
+        </div>
+        <div class="blk">
+          <div class="legend" id="legend" role="group" aria-label="Parts"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Key numbers</div>
+      <h2>Size, weight and performance</h2>
+      <p>All figures are desk estimates from the repo scripts. The quasi-steady power model is probably pessimistic: a comparable commercial flapper (Flapper Nimble+) suggests 20 to 25 W at hover, not 50 W.</p>
+    </div>
+    <div class="tiles">
+      <div class="tile warn"><div class="k">Mass</div><div class="v">109.9<small> g</small></div><div class="n">Design mass 110 g. Margin 0.1 g against a 5% target: OPEN.</div></div>
+      <div class="tile"><div class="k">Wingspan</div><div class="v">420<small> mm</small></div><div class="n">Hinges 20 mm off the centreline. Length about 265 mm, nose module to tail cap.</div></div>
+      <div class="tile"><div class="k">Each wing</div><div class="v">190 × 80<small> mm</small></div><div class="n">Membrane from r 50 mm, 100 cm², 1.23 g. Stepped carbon tube spar.</div></div>
+      <div class="tile"><div class="k">Fore-hind hinge spacing</div><div class="v">110<small> mm</small></div><div class="n">Wings clear by 8.9 mm (realistic) and 0.5 mm (worst case).</div></div>
+      <div class="tile"><div class="k">Flapping frequency</div><div class="v">16.8<small> Hz</small></div><div class="n">To hover. 19.2 Hz needed for 30% extra thrust.</div></div>
+      <div class="tile"><div class="k">Hover power</div><div class="v">50<small> W</small></div><div class="n">Model, at 0.6 Ω winding resistance. Expected in reality: 20 to 25 W.</div></div>
+      <div class="tile"><div class="k">Centre of gravity</div><div class="v">33<small> mm below</small></div><div class="n">At (-9.2, -0.1, -33.2) mm. Battery slide -26 to +12 mm trims it.</div></div>
+      <div class="tile"><div class="k">Flight time</div><div class="v">2 to 5<small> min</small></div><div class="n">2S 300 mAh. About 2 min by the model, 4 to 5 expected.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Where the weight goes</div>
+      <h2>Mass budget: 109.9 g against 110 g</h2>
+      <p>The budget closes with 0.1 g to spare, because Stage 1 overruns (frame, wiring, bearings, skids) were paid from the autonomy reserve, now 7.2 g.</p>
+    </div>
+    <div class="mass">
+      <div>
+        <div class="track" id="totalTrack" aria-label="Total mass 109.9 grams against 110 grams"></div>
+        <div class="marks-space"></div>
+      </div>
+      <div class="bars" id="bars"></div>
+      <p class="note">Amber: carried as assumed or not yet sourced. Grey: reserve held for later phases. Source: <code class="p">params/design.yaml → mass_budget</code>, by module in <code class="p">docs/stages/stage1-mass-by-module.csv</code>.</p>
+      <div class="hist" id="hist" aria-label="Mass history"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">What it can do</div>
+      <h2>Capabilities, as designed</h2>
+      <p>Design predictions only. Nothing has flown or been measured; the single-wing bench rig is the first real test.</p>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Manoeuvre</th><th>How DFLY does it</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Hover</td><td>All four wings at about 16.8 Hz carry 109.9 g.</td><td><span class="pill s-open">Gated on bench</span><br><small class="note">Even at the best-case 0.2 Ω, motor windings sit at the 100 °C limit.</small></td></tr>
+          <tr><td>Climb and descend</td><td>All four wings flap faster or slower together, up to 19.2 Hz.</td><td><span class="pill s-settled">Expected</span></td></tr>
+          <tr><td>Fly sideways</td><td>Roll: left wings flap a little faster than right.</td><td><span class="pill s-settled">Expected</span><br><small class="note">Strongest axis.</small></td></tr>
+          <tr><td>Fly forward and back</td><td>Pitch: fore-hind frequency or phase, plus forewing stroke offset (±6° trims ±5 mm of CG).</td><td><span class="pill s-settled">Expected</span></td></tr>
+          <tr><td>Turn on the spot</td><td>Yaw by split-cycle: each motor speeds up on one half of the beat, opposite on left and right. Required: full yaw from hover to T/W 1.15, half yaw to 19 Hz.</td><td><span class="pill s-open">Gated on bench</span><br><small class="note">0.2 Ω: 2S works. 0.3 Ω: 3S option X. 0.6 Ω: new motor.</small></td></tr>
+          <tr><td>Change fore-hind phase in flight</td><td>Own motor and encoder per wing, so any phase between pairs.</td><td><span class="pill s-settled">Expected</span><br><small class="note">The core research feature.</small></td></tr>
+          <tr><td>Stroke offset</td><td>Servos on w1, w2 shift the stroke centre in flight; w3, w4 set by screw between tests.</td><td><span class="pill s-settled">Expected</span></td></tr>
+          <tr><td>Land and stand</td><td>Carbon tripod skids; wings clear the ground at any crank angle.</td><td><span class="pill s-open">Open</span><br><small class="note">Tip-over angle only 19°.</small></td></tr>
+          <tr><td>Hold position</td><td>Flow deck under the fore modules (downward optical flow and range), Phase B.</td><td><span class="pill s-future">Later phase</span></td></tr>
+          <tr><td>Fly autonomously</td><td>Off-board first (Phase A), onboard vision in Phase C, with 5.6 g left for it.</td><td><span class="pill s-future">Later, re-scope</span></td></tr>
+          <tr><td>Glide, perch, fly outdoors in wind</td><td>Not part of this design.</td><td><span class="pill s-future">Not designed for</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Decisions</div>
+      <h2>Settled and still open</h2>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h3><span class="pill s-settled">Settled</span></h3>
+        <ul>
+          <li>Functional flier, single-wing bench rig first (D-01).</li>
+          <li>Four independent brushless drives, one per wing (D-03, D-05).</li>
+          <li>Crank-rocker: 90° stroke, equal up and down strokes, transmission angle at least 43.8° (D-04).</li>
+          <li>25:1 in two stages, gear set P1: brass, POM, hardened steel, 7075 aluminium; steel crank gear P3 as fallback (D-05).</li>
+          <li>Pin-and-spring pitch joint, ±45° stops (D-06).</li>
+          <li>Wing 190 × 80 mm, membrane from r 50 mm, stepped carbon tube spar (D-12).</li>
+          <li>Stroke offset: servos on w1, w2 at 15:1 (±6°, limit ±6.5°), screw locks on w3, w4 (D-07).</li>
+          <li>Yaw by split-cycle, envelope requirement, firmware ε cap 0.06 (D-13).</li>
+          <li>AS5048A crank encoders at 1 kHz (D-08); Crazyflie Bolt 1.1 (D-09).</li>
+          <li>Stage 1 layout: 110 mm fore-hind, 20 mm hinge offset, 420 mm span, battery slide, tripod skids, swappable modules.</li>
+          <li>CAD and MuJoCo frame conventions fixed.</li>
+        </ul>
+      </div>
+      <div class="card problem">
+        <h3><span class="pill s-open">Open</span></h3>
+        <ul>
+          <li><b>Motor winding resistance and heat.</b> Decides 2S, 3S (option X) or a new motor. First bench measurement.</li>
+          <li><b>Lift direction.</b> If lift runs along the hinge axis (model A), DFLY would hover 59° nose-up. The rig must measure force direction in two axes.</li>
+          <li><b>Mass margin</b> 0.1 g against the 5% target. The 10.3 g frame assumes pocketed plates not yet designed.</li>
+          <li><b>Flight gears</b> are custom with no supplier quoted. Stage 1 contact safety factor 0.99, bench-gated. Ordered after the bench torque test.</li>
+          <li><b>ESC model</b> not chosen.</li>
+          <li><b>Skids</b> tip over at 19°.</li>
+          <li><b>Phase C</b> has 5.6 g left; needs re-scoping.</li>
+          <li><b>Motor bell diameter</b> and 4.3 mm shaft protrusion to measure.</li>
+          <li><b>Firmware:</b> second servo channel at 1 µs, split-cycle controller, ε cap, yaw priority.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>What happens next</h3>
+      <ol>
+        <li><b>Stage 2: detail the wing-drive module</b> (one wing plus its drive, which is also the bench rig). Claude Code generates STEP reference models and part drawings from <code class="p">design.yaml</code>; the SOLIDWORKS model is the master, checked against them.</li>
+        <li>Design the bench rig frame with a two-axis load cell, plus encoder, current-sensor and thermocouple mounts.</li>
+        <li>Order the bench parts in one shipment: motors, packs, servo, encoders and magnets, bearings, pins, stock steel gears, thermocouple reader, current sensor.</li>
+        <li>First measurements: winding resistance, heat, pack resistance, current limit. Pick 2S, 3S or a new motor.</li>
+        <li>Single-wing tests: lift and its direction, power, crank torque, split-cycle yaw force, 20 h wear. Then resize and order the flight gears.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>Source of truth: the repository <code class="p">params/design.yaml</code>, decision records D-01 to D-13 in <code class="p">docs/decisions/</code>, the step log in <code class="p">Decision.md</code> (entries 1 to 8) and the Stage 1 report <code class="p">docs/stages/stage1-body-spec.md</code>. Every number is a desk estimate; no hardware has been measured.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------------- mass budget ---------------- */
+const MASS=[
+ ["Battery, 2S 300 mAh",18.4],["Motors, 4 × 1103",15.2],["Gear trains P1 (custom, not sourced)",14.1,"warn"],
+ ["Thorax frame (pocketed plates, assumed)",10.3,"warn"],["Offset servos, 2 × ES9052MD",9.6],
+ ["Autonomy reserve (Flow deck 1.6 + Phase C 5.6)",7.2,"idle"],["Flight computer (Bolt 1.1)",5.4],
+ ["Linkages, shafts, pins, bearings",5.2],["Wings (4)",5.0],["Wiring",3.9],["ESC, 4-in-1",3.5],
+ ["Encoders and magnets",2.8],["Offset carriers, pushrods",2.1],["Abdomen boom",1.8],
+ ["Wing roots, springs, stops",1.6],["Fasteners",1.5],["Screw locks, w3 and w4",1.0],["Landing skids",0.8],["Servo BEC, 6 V",0.5]];
+const bars=document.getElementById("bars"),maxM=18.4;
+MASS.forEach(([n,v,cl])=>{const r=document.createElement("div");r.className="brow"+(cl?" "+cl:"");
+  r.innerHTML=`<div class="lab" title="${n}">${n}</div><div class="bt"><div class="bf" style="width:${v/maxM*100}%"></div></div><div class="val">${v.toFixed(1)}</div>`;bars.appendChild(r);});
+const TMAX=120,tt=document.getElementById("totalTrack");
+tt.innerHTML=`<div class="fillbar" style="width:${109.9/TMAX*100}%"></div>
+<div class="mark alt" style="left:${104.5/TMAX*100}%"><span style="transform:translateX(-102%)">5% margin target, 104.5 g</span></div>
+<div class="mark" style="left:${110/TMAX*100}%"><span style="transform:translateX(4px)">110 g design · 109.9 g now</span></div>`;
+const HIST=[["Rev A",70,"first concept","old"],["Stage 0",105.3,"real parts chosen","old"],["Option 2 offset",103.2,"servos on forewings only","old"],["Brass gears",132.6,"real gear mass entered","over"],["Gear set P1",109.9,"POM, steel, 7075","old"],["Stage 1 layout",109.9,"2.8 g overrun paid from the reserve","now"]];
+const hist=document.getElementById("hist"),HM=140;
+hist.innerHTML='<h3 style="font-size:16px">How the mass got here</h3>'+HIST.map(([a,v,s,c])=>`<div class="hrow ${c}"><div>${a}<small>${s}</small></div><div class="hb"><div class="hf" style="width:${v/HM*100}%"></div><div class="hm" style="left:${110/HM*100}%"></div></div><div class="val">${v} g</div></div>`).join("");
+
+/* ---------------- part catalogue ---------------- */
+const D="docs/decisions/";
+const INFO={
+ wing:{n:"Wing",g:"×4 · 1.23 g each",s:"settled",c:"#7fc8cc",f:["params/design.yaml → wing",D+"D-12-wing-planform.md","scripts/spar_study.py"],t:"190 mm long, 80 mm maximum chord. Since Stage 1 the membrane starts 50 mm from the flap axis, because the inner trailing edge hit the motor and gears. Area 100 cm², yet lift moment only drops 1.9% since the inner wing barely moves. Stepped carbon tube spar (2.0/1.0 mm to 114 mm, then 1.5/1.0 mm), 15 µm PET film, root batten at r 50. Tip deflection 22.6 mm, first bending 91 Hz (estimated)."},
+ pitch:{n:"Pitch joint",g:"×4 · 1.6 g total",s:"settled",c:"#c9a227",f:[D+"D-06-pitch-joint.md","params/design.yaml → wing"],t:"Root fitting on the spar with a pin hinge, a small torsion spring and ±45° stops. Air and inertia flip the wing at each stroke reversal. Open: spring stiffness; the hinge pin may grow to 2 mm."},
+ linkage:{n:"Linkage and shafts",g:"×4 · 5.2 g total",s:"settled",c:"#9aa7ad",f:[D+"D-04-stroke-mechanism.md","scripts/fourbar.py","docs/stages/stage1-body-spec.md"],t:"Crank 7.07 mm, coupler 34.57 mm, rocker 10 mm on the hinge shaft: a 90° stroke with equal up and down strokes, transmission angle at least 43.8°. Peak coupler force 22.4 N at T/W 1.3 (estimated). Includes the hinge, crank and 2.0 mm hardened intermediate shafts and their bearings."},
+ gear4:{n:"Crank gear z4",g:"×4 · 1.69 g each",s:"open",c:"#b9bec4",f:[D+"D-05-motor.md","scripts/gear_study.py","Decision.md (entry 6)"],t:"50T, module 0.4, webbed hard-anodised 7075 aluminium, 4.6 mm face, 20 mm pitch diameter. Contact safety factor 1.01 at the 167 mN·m T/W 1.3 peak (estimated). Pinned to the crank with a 1 mm dowel. Custom part, no supplier quoted; fallback P3 is hardened steel. Ordered only after the bench measures crank torque."},
+ gear3:{n:"Stage 2 pinion z3",g:"×4 · 0.38 g each",s:"open",c:"#7d868c",f:[D+"D-05-motor.md","scripts/gear_study.py"],t:"10T, module 0.4, hardened steel, 2.0 mm bore on the 2.0 mm hardened intermediate shaft, 5.6 mm long. Custom part."},
+ gear2:{n:"Stage 1 gear z2",g:"×4 · 1.08 g each",s:"open",c:"#e6dcc3",f:[D+"D-05-motor.md","scripts/gear_study.py"],t:"50T, module 0.4, POM plastic with a knurled brass insert, 4.0 mm face to match the bought motor pinion. Contact safety factor 0.99, accepted as bench-gated (POM strength assumed). Custom part."},
+ gear1:{n:"Motor pinion z1",g:"×4 · 0.37 g each",s:"settled",c:"#c9a227",f:[D+"D-05-motor.md","params/design.yaml → drivetrain"],t:"Höhn 10412010 brass 10T, module 0.4, 1.5 mm bore, 4.0 mm face. Bought part."},
+ motor:{n:"Motor",g:"×4 · 3.8 g each",s:"open",c:"#56626a",f:[D+"D-05-motor.md","scripts/drivetrain.py","scripts/power.py","docs/bench/motor-and-battery-plan.md"],t:"BETAFPV 1103 8000KV brushless, 1.5 mm shaft, mounted at 45° by its base on a rear bracket. Winding resistance is unknown and decisive: at 0.2 Ω, full yaw to 18 Hz on 2S with windings at the 100 °C limit; at 0.6 Ω, no yaw and about 180 °C. Bell diameter and the 4.3 mm shaft protrusion still to measure."},
+ carrier:{n:"Offset carrier and arm",g:"×4 · 2.1 g with pushrods",s:"settled",c:"#3d5a9c",f:[D+"D-07-stroke-offset.md","scripts/offset_study.py"],t:"Two cheeks that hold the crank shaft and swing about the intermediate shaft, with a 45 mm arm. 1.70° of stroke offset per carrier degree. Identical on all four wings."},
+ servo:{n:"Offset servo",g:"×2 · 4.8 g each",s:"settled",c:"#2c3f6b",f:[D+"D-07-stroke-offset.md",D+"D-09-flight-computer.md"],t:"Emax ES9052MD on w1 and w2, driving the 45 mm arm through a 3 mm horn and a 0.8 mm wire pushrod (15:1): 0.36 of stall torque. Working ±6°, limit ±6.5° set by horn reach."},
+ lock:{n:"Screw lock",g:"×2 · 0.5 g each",s:"settled",c:"#8a8f94",f:[D+"D-07-stroke-offset.md","scripts/offset_study.py"],t:"On w3 and w4: an M1.6 screw link with a jam nut in the arm's pushrod hole. Self-locking (lead angle 4.64° below friction angle 9.83°). One turn moves the offset 0.76°. A tiny gear motor can turn it later."},
+ encoder:{n:"Crank encoder",g:"×4 · 2.8 g total",s:"settled",c:"#6b4fa0",f:[D+"D-08-crank-sensing.md","docs/stages/stage1-body-spec.md"],t:"AS5048A board on the carrier rear cheek, 4 × 2 mm magnet on the crank shaft, read 1000 times a second. Motors at 45° keep 16.7 mm from the encoders; phase wires run at least 16 mm away."},
+ plates:{n:"Module plates",g:"×4 sets · in the 10.3 g frame",s:"open",c:"#bfc9cc",f:["docs/stages/stage1-body-spec.md","params/design.yaml → layout",D+"D-11-fabrication.md"],t:"SLA resin plates F, M and R plus a motor bracket, at +3.80, -9.15 and -31.45 mm along the hinge axis. Module stack 50.5 mm. Each module comes off with two screws. Plain plates would be 18.7 g; the 10.3 g frame assumes pocketed thin plates, not yet designed."},
+ rails:{n:"Frame rails",g:"in the 10.3 g frame",s:"open",c:"#4a565c",f:["docs/stages/stage1-body-spec.md","docs/stages/stage1-envelopes.csv"],t:"Carbon rods joining the four modules: upper pair at y ±13, z +10 mm, lower pair at y ±10, z -51 mm. Modules clamp on with split tabs."},
+ bolt:{n:"Flight computer",g:"5.4 g",s:"settled",c:"#2f6f4f",f:[D+"D-09-flight-computer.md",D+"D-13-yaw.md"],t:"Bitcraze Crazyflie Bolt 1.1: STM32F405, BMI088 motion sensor, radio. Runs the 1 kHz loops, reads four encoders on SPI, drives two servos. Firmware to add: a second servo channel at 1 µs steps, the split-cycle controller, the ε cap and yaw priority."},
+ esc:{n:"Motor controller (ESC)",g:"3.5 g (estimated)",s:"open",c:"#3f7a4a",f:[D+"D-05-motor.md",D+"D-09-flight-computer.md"],t:"4-in-1, model not chosen. Must follow speed changes inside each beat: OneShot125 or DShot at 1 kHz, no slew limiting, at least 8 A per motor, and 3S-rated if the 3S branch is taken."},
+ bec:{n:"Servo supply (BEC)",g:"0.5 g",s:"settled",c:"#4b6b55",f:[D+"D-07-stroke-offset.md",D+"D-09-flight-computer.md"],t:"Gives the two servos 6 V. Needs 12.6 V input rating if 3S."},
+ battery:{n:"Battery and slide",g:"18.4 g",s:"open",c:"#b54a3c",f:["params/design.yaml → battery","docs/stages/stage1-body-spec.md",D+"D-05-motor.md"],t:"2S 300 mAh 45C, 52 × 18 × 12 mm, hung 33 mm below the hinge plane for pendulum stability. Slides from x -26 to +12 mm (nominal -17.1) to trim the CG. The tray also takes both 3S candidates, so the 2S or 3S choice can wait for the motor test."},
+ flow:{n:"Flow deck v2",g:"1.6 g, in the reserve",s:"future",c:"#7f8c8d",f:[D+"D-10-autonomy.md","docs/stages/stage1-body-spec.md"],t:"Downward optical flow camera plus range sensor, fixed under the fore modules, for position hold in Phase B."},
+ phasec:{n:"Phase C bay",g:"5.6 g left",s:"future",c:"#9aa3a6",f:[D+"D-10-autonomy.md","Decision.md (entry 8)"],t:"Space and mass held for onboard vision. The reserve fell from 10 g to 7.2 g to pay Stage 1 overruns; needs re-scoping. A lighter gear resize after the bench may return 2.2 to 3.6 g."},
+ boom:{n:"Abdomen boom",g:"1.8 g",s:"settled",c:"#4a565c",f:["docs/stages/stage1-body-spec.md","params/design.yaml → layout"],t:"2 mm carbon tube, 130 mm, with a tail cap. Balances the vehicle and carries the tail skid."},
+ skids:{n:"Landing skids",g:"0.8 g",s:"open",c:"#5d6b70",f:["docs/stages/stage1-body-spec.md","Decision.md (entry 8)"],t:"Carbon tube tripod (1.5/1.0 mm): two side legs to feet at (+37, ±55) mm and a tail leg at x -188 mm, all reaching 158 mm below the hinges so the wings clear the ground at any crank angle. Tip-over angle only 19°: open for detail design and first hops."}
+};
+const ORDER=["wing","pitch","linkage","gear4","gear3","gear2","gear1","motor","carrier","servo","lock","encoder","plates","rails","bolt","esc","bec","battery","flow","phasec","boom","skids"];
+const STATUS_TXT={settled:"Settled",open:"Open",problem:"Problem",future:"Future"};
+
+/* ---------------- scene ---------------- */
+const host=document.getElementById("viewport");
+if(!window.THREE||!THREE.OrbitControls){host.innerHTML='<p style="padding:24px;color:var(--muted)">The 3D model could not load. The numbers below are unaffected.</p>';return;}
+const DEG=Math.PI/180,V3=THREE.Vector3;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setClearColor(0,0);
+host.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(32,1,1,8000);camera.up.set(0,0,1);
+const TARGET=new V3(-40,0,-62);
+camera.position.set(430,520,200);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.target.copy(TARGET);controls.enableDamping=true;controls.dampingFactor=.09;controls.minDistance=60;controls.maxDistance=3000;controls.update();
+scene.add(new THREE.HemisphereLight(0xffffff,0x3a4448,0.9));
+const d1=new THREE.DirectionalLight(0xffffff,0.75);d1.position.set(250,180,500);scene.add(d1);
+const d2=new THREE.DirectionalLight(0xffffff,0.35);d2.position.set(-300,-250,120);scene.add(d2);
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}
+let ground=null;
+function buildGround(){if(ground){scene.remove(ground);ground.geometry.dispose();ground.material.dispose();}
+  const c=new THREE.Color(cssVar("--line"));ground=new THREE.GridHelper(800,32,c,c);ground.rotation.x=Math.PI/2;ground.position.set(-55,0,-158);
+  ground.material.transparent=true;ground.material.opacity=.55;scene.add(ground);ground.visible=!(G&&G.items.length);}
+let G=null;buildGround();
+const mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",buildGround);
+new MutationObserver(buildGround).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+/* frames: body x fwd, y left, z up (mm); unit frame (u outboard, w up in stroke plane, s along hinge axis) */
+const TILT=30*DEG;
+const AX=new V3(Math.cos(TILT),0,Math.sin(TILT)),WV=new V3(-Math.sin(TILT),0,Math.cos(TILT)),YV=new V3(0,1,0),ZV=new V3(0,0,1),Y3=new V3(0,1,0);
+const HY=20,HX={fore:55,hind:-55};
+function U(unit,side,s,u,w){return new V3(HX[unit],side*HY,0).addScaledVector(AX,s).addScaledVector(YV,side*u).addScaledVector(WV,w);}
+const BASIS=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(YV,WV,AX));
+const S_={F:3.8,M:-9.15,R:-31.45,link:-4,gearA:-16.3,gearB:-27.4,cheekF:-10.9,cheekR:-21.7,enc:-23.25,mag:-21.4,motor0:-44.2,motor1:-30.2,bracket:-44.95,servo:-34.25,rod:-20.65};
+
+const GROUPS={},MATS={},MESHES=[],CAT={};
+function group(key,order,caption){GROUPS[key]={key,order,caption,holders:[],e:0,target:0};}
+function holder(g,vec){const h=new THREE.Group();h.userData.vec=vec.clone();scene.add(h);GROUPS[g].holders.push(h);return h;}
+function mat(key,o){const m=new THREE.MeshStandardMaterial(Object.assign({roughness:.55,metalness:.15,color:INFO[key].c},o||{}));(MATS[key]=MATS[key]||[]).push(m);return m;}
+function add(key,h,geo,m,rep){const x=new THREE.Mesh(geo,m);x.userData.part=key;h.add(x);MESHES.push(x);if(rep!==false)(CAT[key]=CAT[key]||[]).push(x);return x;}
+const CYL=new THREE.CylinderGeometry(1,1,1,12);
+function bar(key,h,m,r,rep){const x=add(key,h,CYL,m,rep);x.userData.r=r;return x;}
+function setBar(x,p1,p2){const d=new V3().subVectors(p2,p1);const L=Math.max(d.length(),1e-6);x.position.copy(p1).addScaledVector(d,.5);x.quaternion.setFromUnitVectors(Y3,d.multiplyScalar(1/L));x.scale.set(x.userData.r,L,x.userData.r);}
+function gearGeo(z,mod,thk){const rp=mod*z/2,ra=rp+mod,rf=rp-1.25*mod,sh=new THREE.Shape(),t=2*Math.PI/z;
+  for(let i=0;i<z;i++){const a=i*t;[[rf,a],[ra,a+t*.22],[ra,a+t*.48],[rf,a+t*.7]].forEach(([r,an],j)=>{const x=r*Math.cos(an),y=r*Math.sin(an);(i===0&&j===0)?sh.moveTo(x,y):sh.lineTo(x,y);});}
+  const hole=new THREE.Path();hole.absarc(0,0,Math.max(.75,rf*.15),0,Math.PI*2,true);sh.holes.push(hole);
+  if(z>20){for(let k=0;k<5;k++){const a=k/5*Math.PI*2,c=new THREE.Path();c.absarc(rf*.55*Math.cos(a),rf*.55*Math.sin(a),rf*.17,0,Math.PI*2,true);sh.holes.push(c);}}
+  const g=new THREE.ExtrudeGeometry(sh,{depth:thk,bevelEnabled:false,curveSegments:6});g.translate(0,0,-thk/2);return g;}
+const GEO={};function gg(k,z,mod,thk){return GEO[k]||(GEO[k]=gearGeo(z,mod,thk));}
+function gear(key,h,unit,side,s,u,w,geo,m,rep){const g=new THREE.Group();g.position.copy(U(unit,side,s,u,w));g.quaternion.setFromUnitVectors(ZV,AX);h.add(g);
+  const x=new THREE.Mesh(geo,m);x.userData.part=key;g.add(x);MESHES.push(x);if(rep)(CAT[key]=CAT[key]||[]).push(x);return {g,m:x};}
+function cylAlong(key,h,unit,side,s0,s1,u,w,r,m,rep){const x=add(key,h,new THREE.CylinderGeometry(r,r,Math.abs(s1-s0),24),m,rep);x.position.copy(U(unit,side,(s0+s1)/2,u,w));x.quaternion.setFromUnitVectors(Y3,AX);return x;}
+function unitBox(key,h,unit,side,s,u,w,du,dw,ds,m,rep){const x=add(key,h,new THREE.BoxGeometry(du,dw,ds),m,rep);x.position.copy(U(unit,side,s,u,w));x.quaternion.copy(BASIS);return x;}
+function box(key,h,cx,cy,cz,dx,dy,dz,m){const x=add(key,h,new THREE.BoxGeometry(dx,dy,dz),m);x.position.set(cx,cy,cz);return x;}
+const _m4=new THREE.Matrix4();
+function orientBox(x,center,e1){const e3=AX.clone(),a=e1.clone().normalize(),b=new V3().crossVectors(e3,a).normalize();_m4.makeBasis(a,b,e3);x.quaternion.setFromRotationMatrix(_m4);x.position.copy(center);}
+
+/* explode groups, outside-in */
+group("battery",1,"Battery out: 2S 300 mAh, 18.4 g, on its slide 33 mm below the hinges. It trims the CG from x -26 to +12 mm.");
+group("autonomy",2,"Autonomy: the Flow deck under the fore modules and the Phase C bay (ghost). 7.2 g reserve, 5.6 g of it left for Phase C.");
+group("skids",3,"Landing skids: a 0.8 g carbon tripod reaching 158 mm below the hinges, so the wings clear the ground at any crank angle.");
+group("electronics",4,"Electronics: Crazyflie Bolt 1.1, the 4-in-1 motor controller and the 6 V servo supply, in the central bay.");
+group("boom",5,"Abdomen boom: a 2 mm carbon tube with a tail cap, also carrying the tail skid.");
+group("wings",6,"Four wings with their pitch joints. The membrane now starts 50 mm out, clear of the drive.");
+group("offset",7,"Stroke-offset hardware: carriers and arms, servos on w1 and w2, screw locks on w3 and w4.");
+group("linkage",8,"Crank-rocker linkages and shafts: they turn rotation into a 90° flap.");
+group("encoders",9,"Crank encoders: AS5048A boards behind each carrier, reading the crank magnets at 1 kHz.");
+group("gears",10,"Gear set P1, 25:1 in two stages: brass and POM in stage 1, steel and 7075 aluminium in stage 2. 14.1 g for four.");
+group("motors",11,"Four 1103 motors at 45° on their rear brackets. What remains is the frame: module plates and carbon rails.");
+group("frame",99,"");
+const NSTEP=11;
+
+/* ---------------- frame, body parts ---------------- */
+const hF=holder("frame",new V3());
+const plateMat=mat("plates",{transparent:true,opacity:.32,roughness:.8,metalness:0,side:THREE.DoubleSide,depthWrite:false});
+const railMat=mat("rails",{roughness:.4});
+["fore","hind"].forEach(unit=>[1,-1].forEach(side=>{const rep=unit==="fore"&&side===1;
+  unitBox("plates",hF,unit,side,S_.F,-2.5,3.7,15,17.4,2,plateMat,rep);
+  unitBox("plates",hF,unit,side,S_.M,-1.82,-18.0,23.5,46.07,2.5,plateMat,rep);
+  unitBox("plates",hF,unit,side,S_.R,4.96,-30.15,35.91,27.15,2.5,plateMat,rep);
+  unitBox("plates",hF,unit,side,S_.bracket,11.67,-27.83,19.48,19.48,1.5,plateMat,rep);}));
+[[13,10],[-13,10],[10,-51],[-10,-51]].forEach(([y,z])=>{const b=bar("rails",hF,railMat,1.0);setBar(b,new V3(-84,y,z),new V3(80,y,z));});
+
+const hBat=holder("battery",new V3(0,0,-90));
+box("battery",hBat,-17.1,0,-60,52,18,12,mat("battery",{roughness:.7}));
+box("battery",hBat,-7,0,-67.2,90,16,1.2,mat("battery",{color:"#7a3a31",roughness:.7}));
+const hEl=holder("electronics",new V3(-10,0,120));
+box("bolt",hEl,-16,0,-18,36,36,1.6,mat("bolt",{roughness:.6}));box("bolt",hEl,-16,0,-16.4,10,10,1.6,mat("bolt",{color:"#1d2326"}));
+box("esc",hEl,-16,0,-25,25,25,3,mat("esc"));
+box("bec",hEl,-1,12,-25,8,8,3,mat("bec"));
+const hFlow=holder("autonomy",new V3(60,0,-60));
+box("flow",hFlow,50,0,-60,21,28,1.6,mat("flow",{roughness:.6}));box("flow",hFlow,50,0,-61.5,6,6,1.4,mat("flow",{color:"#2a3134"}));
+const hPC=holder("autonomy",new V3(0,0,-100));
+box("phasec",hPC,8,0,-40,24,26,20,mat("phasec",{wireframe:true,transparent:true,opacity:.8}));
+const hBoom=holder("boom",new V3(-90,0,30));
+const bm=bar("boom",hBoom,mat("boom",{roughness:.35}),1.0);setBar(bm,new V3(-62,0,-10),new V3(-193,0,-10));
+const cap=add("boom",hBoom,new THREE.SphereGeometry(3,16,12),mat("boom",{color:"#2c3438"}));cap.position.set(-195,0,-10);
+const hSk=holder("skids",new V3(0,0,-50));
+const skMat=mat("skids",{roughness:.4}),ftMat=mat("skids",{color:"#2c3438"});
+[[1],[-1]].forEach(([sd])=>{const l=bar("skids",hSk,skMat,.75);setBar(l,new V3(-5,sd*10,-25),new V3(37,sd*55,-158));const f=add("skids",hSk,new THREE.SphereGeometry(2.4,12,10),ftMat);f.position.set(37,sd*55,-158);});
+const tl=bar("skids",hSk,skMat,.75);setBar(tl,new V3(-188,0,-10),new V3(-188,0,-158));const tf=add("skids",hSk,new THREE.SphereGeometry(2.4,12,10),ftMat);tf.position.set(-188,0,-158);
+
+/* ---------------- wing-drive units ---------------- */
+const R=190,C=80,R0=12,R1=.30*R,RF=.667*R,RM=50;
+function chord(r){if(r<R1)return C*(.7+.3*(r-R0)/(R1-R0));if(r<=RF)return C;const t=(r-RF)/(R-RF);return C*Math.sqrt(Math.max(0,1-t*t));}
+const plan=[],NP=44;for(let i=0;i<=NP;i++){plan.push([RM+(R-RM)*i/NP,0]);}for(let i=NP;i>=0;i--){const r=RM+(R-RM)*i/NP;plan.push([r,-chord(r)]);}
+const wingShape=new THREE.Shape(plan.map(([x,y])=>new THREE.Vector2(x,y)));
+const VEINS=[[[RM,-14],[173,-34]],[[RM,-44],[141,-69]],[[RM,0],[RM,-chord(RM)+1]]];
+const LINK={a:7.0711,b:34.5711,c:10,A0:[-7.0711,-34.5711],I:[4.929,-34.5711],M:[13.414,-26.086]};
+function solveB(A0,q){const A=[A0[0]+LINK.a*Math.cos(q),A0[1]+LINK.a*Math.sin(q)];const d=Math.hypot(A[0],A[1]),u=[A[0]/d,A[1]/d],n=[-u[1],u[0]];
+  const x=(d*d+LINK.c*LINK.c-LINK.b*LINK.b)/(2*d),y=Math.sqrt(Math.max(0,LINK.c*LINK.c-x*x));const B1=[x*u[0]+y*n[0],x*u[1]+y*n[1]],B2=[x*u[0]-y*n[0],x*u[1]-y*n[1]];return {A,B:B1[0]<B2[0]?B1:B2};}
+function rotAbout(p,c,a){const dx=p[0]-c[0],dy=p[1]-c[1];return [c[0]+dx*Math.cos(a)-dy*Math.sin(a),c[1]+dx*Math.sin(a)+dy*Math.cos(a)];}
+function wingAngle(A0,q){const B=solveB(A0,q).B;return Math.atan2(-B[1],-B[0]);}
+const WINGS=[{id:"w1",lab:"w1 left fore",unit:"fore",side:1},{id:"w2",lab:"w2 right fore",unit:"fore",side:-1},{id:"w3",lab:"w3 left hind",unit:"hind",side:1},{id:"w4",lab:"w4 right hind",unit:"hind",side:-1}];
+const memMat=mat("wing",{transparent:true,opacity:.4,roughness:.25,metalness:.05,side:THREE.DoubleSide,depthWrite:false});
+const sparMat=mat("wing",{color:"#39444a",roughness:.35}),veinMat=mat("wing",{color:"#56636a",roughness:.4});
+const springMat=mat("pitch",{metalness:.6,roughness:.35}),rootMat=mat("pitch",{color:"#8e7a3a",roughness:.5});
+const steelMat=mat("linkage",{metalness:.55,roughness:.35}),pinMat=mat("linkage",{color:"#c8d0d3",metalness:.6,roughness:.3});
+const m4=mat("gear4",{metalness:.55,roughness:.3}),m3=mat("gear3",{metalness:.6,roughness:.3}),m2=mat("gear2",{roughness:.5}),m1=mat("gear1",{metalness:.65,roughness:.32});
+const motorMat=mat("motor",{metalness:.4,roughness:.4}),motorTop=mat("motor",{color:"#9aa6ad",metalness:.6,roughness:.3});
+const encMat=mat("encoder",{roughness:.6}),magMat=mat("encoder",{color:"#a33b3b",metalness:.4});
+const cheekMat=mat("carrier",{roughness:.55}),armMat=mat("carrier",{color:"#6f86b8",roughness:.45});
+const servoMat=mat("servo",{roughness:.55}),rodMat=mat("servo",{color:"#b8c0c8",metalness:.6});
+const lockMat=mat("lock",{metalness:.6,roughness:.35});
+const G4=gg("z4",50,.4,4.6),G3=gg("z3",10,.4,5.6),G2=gg("z2",50,.4,4.0),G1=gg("z1",10,.4,4.0);
+
+WINGS.forEach(W=>{
+  const {unit,side}=W,fx=unit==="fore"?1:-1,rep=W.id==="w1",repL=W.id==="w3";
+  W.hW=holder("wings",new V3(fx*25,side*100,60));
+  W.hL=holder("linkage",new V3(0,side*10,0).addScaledVector(AX,40));
+  W.hG=holder("gears",new V3(0,side*48,0).addScaledVector(AX,-8));
+  W.hM=holder("motors",new V3(0,side*70,0).addScaledVector(AX,-45));
+  W.hE=holder("encoders",new V3(0,side*22,0).addScaledVector(AX,-28).addScaledVector(WV,-22));
+  W.hO=holder("offset",new V3(fx*20,side*34,48));
+  const g=new THREE.ShapeGeometry(wingShape),pos=g.attributes.position;
+  W.uv2=new Float32Array(pos.count*2);for(let i=0;i<pos.count;i++){W.uv2[2*i]=pos.getX(i);W.uv2[2*i+1]=pos.getY(i);}
+  W.mem=add("wing",W.hW,g,memMat,rep);W.mem.renderOrder=2;W.mem.userData.dyn=true;
+  W.sparRoot=bar("wing",W.hW,sparMat,1.0,rep);W.sparTip=bar("wing",W.hW,sparMat,.75,rep);
+  W.veins=VEINS.map((v,i)=>bar("wing",W.hW,veinMat,i===2?.45:.35,rep));
+  W.root=bar("pitch",W.hW,rootMat,2.2,rep);
+  W.spring=add("pitch",W.hW,new THREE.TorusGeometry(2.6,.55,8,18),springMat,rep);
+  W.hinge=cylAlong("linkage",W.hL,unit,side,-9,4,0,0,.9,pinMat,rep);
+  W.ishaft=cylAlong("linkage",W.hL,unit,side,-30,-9.5,LINK.I[0],LINK.I[1],1.0,pinMat,rep);
+  W.cshaft=bar("linkage",W.hL,pinMat,1.0,rep);
+  W.crank=bar("linkage",W.hL,steelMat,1.1,rep);W.coupler=bar("linkage",W.hL,steelMat,.9,rep);W.rocker=bar("linkage",W.hL,steelMat,1.3,rep);
+  W.pins=[0,1,2].map(()=>add("linkage",W.hL,new THREE.SphereGeometry(1.5,12,10),pinMat,rep));
+  W.g4=gear("gear4",W.hG,unit,side,S_.gearA,LINK.A0[0],LINK.A0[1],G4,m4,rep);
+  W.g3=gear("gear3",W.hG,unit,side,S_.gearA,LINK.I[0],LINK.I[1],G3,m3,rep);
+  W.g2=gear("gear2",W.hG,unit,side,S_.gearB,LINK.I[0],LINK.I[1],G2,m2,rep);
+  W.g1=gear("gear1",W.hG,unit,side,S_.gearB,LINK.M[0],LINK.M[1],G1,m1,rep);
+  cylAlong("motor",W.hM,unit,side,S_.motor0,S_.motor1-1.4,LINK.M[0],LINK.M[1],7,motorMat,rep);
+  cylAlong("motor",W.hM,unit,side,S_.motor1-1.4,S_.motor1,LINK.M[0],LINK.M[1],4.2,motorTop,rep);
+  cylAlong("motor",W.hM,unit,side,S_.motor1,S_.gearB-2,LINK.M[0],LINK.M[1],.75,motorTop,rep);
+  W.encB=add("encoder",W.hE,new THREE.BoxGeometry(10,10,1.6),encMat,rep);
+  W.encMag=add("encoder",W.hE,new THREE.CylinderGeometry(2,2,1.4,20),magMat,rep);
+  W.cheeks=[0,1].map(()=>add("carrier",W.hO,new THREE.BoxGeometry(21,9,1.2),cheekMat,rep));
+  W.arm=bar("carrier",W.hO,armMat,1.1,rep);
+  if(unit==="fore"){W.servo=unitBox("servo",W.hO,unit,side,S_.servo,-12.99,15.2,8.8,19.9,23.1,servoMat,rep);W.push=bar("servo",W.hO,rodMat,.45,rep);}
+  else{W.lockRod=bar("lock",W.hO,lockMat,.8,repL);W.post=unitBox("lock",W.hO,unit,side,S_.rod,-15.5,10.3,5,4,5,lockMat,repL);W.nut=add("lock",W.hO,new THREE.CylinderGeometry(1.6,1.6,1.3,6),lockMat,repL);}
+});
+
+/* ---------------- state and controls ---------------- */
+const S={play:false,phase:180*DEG,offL:0,offR:0,yaw:0,t:0,step:0,all:false,sel:null};
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $=id=>document.getElementById(id);
+const playBtn=$("play");
+function setPlay(v){S.play=v;playBtn.textContent=v?"Pause":"Play flapping";playBtn.setAttribute("aria-pressed",String(v));}
+playBtn.addEventListener("click",()=>setPlay(!S.play));
+function bindRange(id,key,fmt,conv){const el=$(id),out=$(id+"Val");const f=()=>{S[key]=conv(+el.value);out.textContent=fmt(+el.value);};el.addEventListener("input",f);f();return el;}
+bindRange("phase","phase",v=>v+"°",v=>v*DEG);
+bindRange("offL","offL",v=>(v>0?"+":"")+v+"°",v=>v);
+bindRange("offR","offR",v=>(v>0?"+":"")+v+"°",v=>v);
+bindRange("yaw","yaw",v=>(v>0?"left ":v<0?"right ":"")+Math.abs(v).toFixed(1),v=>v);
+$("resetCtl").addEventListener("click",()=>{[["phase",180],["offL",0],["offR",0],["yaw",0]].forEach(([id,v])=>{$(id).value=v;$(id).dispatchEvent(new Event("input"));});});
+
+const stepCap=$("stepCap"),stepCount=$("stepCount"),allBtn=$("all"),gridBtn=$("grid");
+function applySteps(){
+  Object.values(GROUPS).forEach(g=>{g.target=(S.all&&g.order<=NSTEP)||g.order<=S.step?1:0;});
+  stepCount.textContent=(S.all?NSTEP:S.step)+" / "+NSTEP;
+  const g=Object.values(GROUPS).find(x=>x.order===S.step);
+  stepCap.textContent=G.target?"Every part laid out in a grid, each scaled up or down to fit its cell (real sizes are in the details). The label gives its name, count, mass and the main repo file holding its numbers. Click a part for every file.":S.all?"Everything pulled apart along its own direction. Press Explode all again to reassemble.":S.step===0?"Fully assembled. Press Remove next to take DFLY apart one layer at a time.":g.caption;
+  allBtn.textContent=S.all?"Reassemble":"Explode all";
+}
+G={on:false,e:0,target:0,items:[],labels:[],pick:[]};
+$("next").addEventListener("click",()=>{exitGrid();S.all=false;S.step=Math.min(NSTEP,S.step+1);applySteps();});
+$("prev").addEventListener("click",()=>{exitGrid();S.all=false;S.step=Math.max(0,S.step-1);applySteps();});
+allBtn.addEventListener("click",()=>{exitGrid();S.all=!S.all;if(!S.all)S.step=0;applySteps();});
+gridBtn.addEventListener("click",()=>{G.target?exitGrid():enterGrid();applySteps();});
+
+/* legend and info */
+const legend=$("legend"),info=$("info");
+ORDER.forEach(k=>{const b=document.createElement("button");b.dataset.k=k;b.setAttribute("aria-pressed","false");b.innerHTML=`<span class="dot" style="background:${INFO[k].c}"></span>${INFO[k].n}`;b.addEventListener("click",()=>select(S.sel===k?null:k));legend.appendChild(b);});
+const ACC=new THREE.Color();
+function select(k){S.sel=k;legend.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===k)));
+  Object.keys(MATS).forEach(key=>MATS[key].forEach(m=>m.emissive.setHex(0)));
+  if(!k){info.innerHTML='<p class="empty">Click a part in the model, or pick one below.</p>';return;}
+  ACC.set(cssVar("--accent"));(MATS[k]||[]).forEach(m=>m.emissive.copy(ACC).multiplyScalar(.5));
+  const I=INFO[k];
+  info.innerHTML=`<div class="row" style="justify-content:space-between"><span class="nm">${I.n}</span><span class="pill s-${I.s}">${STATUS_TXT[I.s]}</span></div><div class="ms">${I.g}</div><p>${I.t}</p><div class="where">Where to find it in the repo</div><ul class="files">${I.f.map(x=>`<li><code>${x}</code></li>`).join("")}</ul>`;}
+
+/* camera views and animation */
+const VIEWS={iso:[430,520,200],front:[760,0,-40],side:[-40,800,-40],top:[-40,0.01,860]};
+let CAM=null;
+function flyTo(pos,tgt,dur){CAM={p0:camera.position.clone(),t0:controls.target.clone(),p1:pos.clone(),t1:tgt.clone(),t:0,d:reduce?0.01:(dur||0.9)};}
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{if(G.target)exitGrid(),applySteps();const v=VIEWS[b.dataset.view];flyTo(new V3(v[0],v[1],v[2]),TARGET,0.6);}));
+
+/* labels on the assembled model */
+const tags=WINGS.map(W=>{const d=document.createElement("div");d.className="tag";d.textContent=W.lab;host.appendChild(d);return d;});
+const fwdTag=document.createElement("div");fwdTag.className="tag fwd";fwdTag.textContent="Nose (forward)";host.appendChild(fwdTag);
+const arrow=new THREE.ArrowHelper(new V3(1,0,0),new V3(95,0,-110),45,0x0e7c83,10,6);scene.add(arrow);
+
+/* ---------------- explode with labels (grid) ---------------- */
+const GRID_C=new V3(0,0,-40),CELL=120;
+function vehicleVisible(v){Object.values(GROUPS).forEach(g=>g.holders.forEach(h=>h.visible=v));arrow.visible=v;if(ground)ground.visible=v;}
+function enterGrid(){
+  if(G.items.length)teardown();
+  S.all=false;S.step=0;Object.values(GROUPS).forEach(g=>{g.target=0;});
+  scene.updateMatrixWorld(true);
+  const w=host.clientWidth,narrow=w<520,keys=ORDER.filter(k=>CAT[k]&&CAT[k].length),CH=CELL*(narrow?1.45:2.3);
+  host.classList.add("gridmode");const hh=host.clientHeight;
+  let cols=3,best=0;for(let c=2;c<=9;c++){const r=Math.ceil(keys.length/c),f=Math.min(w/(c*CELL),hh/(r*CH));if(f>best){best=f;cols=c;}}
+  const rows=Math.ceil(keys.length/cols);
+  keys.forEach((k,i)=>{
+    const src=CAT[k],bb=new THREE.Box3();src.forEach(m=>bb.expandByObject(m));
+    const c=bb.getCenter(new V3()),sz=bb.getSize(new V3());
+    const grp=new THREE.Group(),T=new THREE.Matrix4().makeTranslation(-c.x,-c.y,-c.z);
+    src.forEach(m=>{const cl=new THREE.Mesh(m.userData.dyn?m.geometry.clone():m.geometry,m.material);if(m.userData.dyn)cl.userData.tmp=true;cl.matrixAutoUpdate=false;cl.matrix.copy(m.matrixWorld).premultiply(T);cl.userData.part=k;cl.renderOrder=m.renderOrder;grp.add(cl);G.pick.push(cl);});
+    const maxd=Math.max(sz.x,sz.y,sz.z,1),sc=Math.min(CELL*.6/maxd,9);
+    const col=i%cols,row=Math.floor(i/cols);
+    const cellC=GRID_C.clone().addScaledVector(YV,(col-(cols-1)/2)*CELL).addScaledVector(ZV,-(row-(rows-1)/2)*CH);
+    const P=cellC.clone().addScaledVector(ZV,CH*(narrow?.2:.24));
+    grp.position.copy(c);scene.add(grp);
+    const I=INFO[k],lab=document.createElement("div");lab.className="glabel";
+    lab.innerHTML=`<b>${I.n}</b><span>${I.g}</span>${narrow?"":`<code>${I.f[0]}</code>`}${!narrow&&I.f.length>1?`<span>+${I.f.length-1} more, click</span>`:""}`;
+    lab.style.opacity=0;host.appendChild(lab);
+    G.items.push({grp,from:c,to:P,sc,lab,anchor:cellC.clone().addScaledVector(ZV,-CH*.06),spin:i*0.7});
+  });
+  const H=rows*CH,Wd=cols*CELL,asp=host.clientWidth/Math.max(1,host.clientHeight),tv=Math.tan(16*DEG);
+  const dist=Math.max(H/2/tv,Wd/2/(tv*asp))*1.06;
+  G.target=1;G.on=true;gridBtn.setAttribute("aria-pressed","true");gridBtn.textContent="Reassemble";
+  host.classList.add("gridmode");
+  flyTo(GRID_C.clone().add(new V3(dist+60,0,0)),GRID_C,1.1);
+  setTimeout(()=>{resize();const a2=host.clientWidth/Math.max(1,host.clientHeight);const d2=Math.max(H/2/tv,Wd/2/(tv*a2))*1.06;flyTo(GRID_C.clone().add(new V3(d2+60,0,0)),GRID_C,0.9);},60);
+}
+function exitGrid(){if(!G.target)return;G.target=0;gridBtn.setAttribute("aria-pressed","false");gridBtn.textContent="Explode with labels";const v=VIEWS.iso;flyTo(new V3(v[0],v[1],v[2]),TARGET,1.0);}
+function teardown(){G.items.forEach(it=>{it.grp.children.forEach(cl=>{if(cl.userData.tmp)cl.geometry.dispose();});scene.remove(it.grp);it.lab.remove();});G.items=[];G.pick=[];G.on=false;host.classList.remove("gridmode");vehicleVisible(true);resize();}
+
+/* picking */
+const ray=new THREE.Raycaster(),ptr=new THREE.Vector2(),tip=$("tip");let downAt=null;
+function pick(ev){const r=renderer.domElement.getBoundingClientRect();ptr.x=((ev.clientX-r.left)/r.width)*2-1;ptr.y=-((ev.clientY-r.top)/r.height)*2+1;ray.setFromCamera(ptr,camera);
+  const list=G.items.length?G.pick:MESHES;const hit=ray.intersectObjects(list,false).find(h=>h.object.visible!==false);return hit?hit.object.userData.part:null;}
+renderer.domElement.addEventListener("pointermove",ev=>{if(ev.pointerType!=="mouse")return;const k=pick(ev);if(k){const r=host.getBoundingClientRect();tip.hidden=false;tip.textContent=INFO[k].n;tip.style.left=(ev.clientX-r.left)+"px";tip.style.top=(ev.clientY-r.top)+"px";}else tip.hidden=true;});
+renderer.domElement.addEventListener("pointerleave",()=>{tip.hidden=true;});
+renderer.domElement.addEventListener("pointerdown",ev=>{downAt=[ev.clientX,ev.clientY];});
+renderer.domElement.addEventListener("pointerup",ev=>{if(!downAt)return;const mv=Math.hypot(ev.clientX-downAt[0],ev.clientY-downAt[1]);downAt=null;if(mv<5)select(pick(ev));});
+
+function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(host);resize();
+
+/* ---------------- per-frame ---------------- */
+const tmp=new V3(),proj=new V3();
+function updateWing(W){
+  const {unit,side}=W;
+  const theta=2*Math.PI*S.t+(unit==="fore"?S.phase:0);
+  const eps=S.yaw*0.12*side,q=theta+eps*Math.sin(theta);
+  const off=W.id==="w1"?S.offL:W.id==="w2"?S.offR:0,delta=-off/1.70*DEG;
+  const A0=rotAbout(LINK.A0,LINK.I,delta),sol=solveB(A0,q),phi=Math.atan2(-sol.B[1],-sol.B[0]);
+  const dq=1e-3,dphi=(wingAngle(A0,q+dq)-phi)/dq*(1+eps*Math.cos(theta)),p=40*DEG*Math.tanh(dphi*2.2);
+  const O=U(unit,side,0,0,0);
+  const spar=new V3().addScaledVector(YV,side*Math.cos(phi)).addScaledVector(WV,Math.sin(phi));
+  const mdir=new V3().addScaledVector(YV,-side*Math.sin(phi)).addScaledVector(WV,Math.cos(phi));
+  const cdir=new V3().addScaledVector(AX,Math.cos(p)).addScaledVector(mdir,Math.sin(p));
+  const P=(r,ch)=>new V3().copy(O).addScaledVector(spar,r).addScaledVector(cdir,ch);
+  const pos=W.mem.geometry.attributes.position;
+  for(let i=0;i<pos.count;i++){const v=P(W.uv2[2*i],W.uv2[2*i+1]);pos.setXYZ(i,v.x,v.y,v.z);}
+  pos.needsUpdate=true;W.mem.geometry.computeBoundingSphere();W.mem.geometry.computeBoundingBox();
+  setBar(W.sparRoot,P(4,0),P(.6*R,0));setBar(W.sparTip,P(.6*R,0),P(R,0));
+  VEINS.forEach((v,i)=>setBar(W.veins[i],P(v[0][0],v[0][1]),P(v[1][0],v[1][1])));
+  setBar(W.root,P(3,0),P(14,0));W.spring.position.copy(P(9,0));W.spring.quaternion.setFromUnitVectors(ZV,spar);
+  const L=(uw,s)=>U(unit,side,s===undefined?S_.link:s,uw[0],uw[1]);
+  const pA0=L(A0),pA=L(sol.A),pB=L(sol.B),pO=L([0,0]);
+  setBar(W.crank,pA0,pA);setBar(W.coupler,pA,pB);setBar(W.rocker,pO,pB);
+  W.pins[0].position.copy(pA);W.pins[1].position.copy(pB);W.pins[2].position.copy(pA0);
+  setBar(W.cshaft,L(A0,S_.link+1),L(A0,S_.mag-.6));
+  W.g4.g.position.copy(U(unit,side,S_.gearA,A0[0],A0[1]));W.g4.m.rotation.z=side*q;
+  W.g3.m.rotation.z=-side*5*q;W.g2.m.rotation.z=-side*5*q;W.g1.m.rotation.z=side*25*q;
+  orientBox(W.encB,U(unit,side,S_.enc,A0[0],A0[1]),YV.clone().multiplyScalar(side));
+  W.encMag.position.copy(U(unit,side,S_.mag,A0[0],A0[1]));W.encMag.quaternion.setFromUnitVectors(Y3,AX);
+  const mid=[(A0[0]+LINK.I[0])/2,(A0[1]+LINK.I[1])/2],e1=new V3().subVectors(U(unit,side,0,LINK.I[0],LINK.I[1]),U(unit,side,0,A0[0],A0[1]));
+  orientBox(W.cheeks[0],U(unit,side,S_.cheekF,mid[0],mid[1]),e1);orientBox(W.cheeks[1],U(unit,side,S_.cheekR,mid[0],mid[1]),e1);
+  const armEnd=rotAbout([LINK.I[0],LINK.I[1]+45],LINK.I,delta);
+  setBar(W.arm,U(unit,side,S_.cheekR,LINK.I[0],LINK.I[1]),U(unit,side,S_.cheekR,armEnd[0],armEnd[1]));
+  const anchor=U(unit,side,S_.rod,-12.99,10.3),pEnd=U(unit,side,S_.rod,armEnd[0],armEnd[1]);
+  if(W.push)setBar(W.push,pEnd,anchor);
+  if(W.lockRod){setBar(W.lockRod,pEnd,anchor);W.nut.position.copy(U(unit,side,S_.rod,-6,10.3));W.nut.quaternion.setFromUnitVectors(Y3,YV);}
+  W.tipPos=P(170,-30);
+}
+let last=performance.now();
+const smooth=x=>x*x*(3-2*x);
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(S.play)S.t+=dt;
+  WINGS.forEach(updateWing);
+  Object.values(GROUPS).forEach(g=>{g.e+=(g.target-g.e)*Math.min(1,dt*(reduce?20:5));g.holders.forEach(h=>h.position.copy(h.userData.vec).multiplyScalar(g.e));});
+  /* grid animation */
+  if(G.items.length){
+    G.e+=(G.target-G.e)*Math.min(1,dt*(reduce?20:3.2));
+    if(G.target===1&&G.e>0.02)vehicleVisible(false);
+    const e=smooth(Math.min(1,Math.max(0,G.e)));
+    const w=host.clientWidth,h=host.clientHeight;
+    G.items.forEach(it=>{
+      it.grp.position.lerpVectors(it.from,it.to,e);
+      const s=1+(it.sc-1)*e;it.grp.scale.setScalar(s);
+      it.spin+=reduce?0:dt*0.35;it.grp.rotation.set(0,0,it.spin*e);
+      proj.copy(it.anchor).project(camera);
+      if(proj.z>1){it.lab.style.opacity=0;return;}
+      it.lab.style.left=((proj.x+1)/2*w)+"px";it.lab.style.top=((1-proj.y)/2*h)+"px";
+      tmp.copy(it.anchor).addScaledVector(YV,CELL*.47).project(camera);
+      const cw=Math.abs(tmp.x-proj.x)/2*w*2*0.92;it.lab.style.width=Math.max(64,cw)+"px";
+      it.lab.style.opacity=Math.max(0,(e-.5)*2);
+    });
+    if(G.target===0){vehicleVisible(G.e<0.35);if(G.e<0.01)teardown();}
+  }
+  if(CAM){CAM.t=Math.min(1,CAM.t+dt/CAM.d);const k=smooth(CAM.t);camera.position.lerpVectors(CAM.p0,CAM.p1,k);controls.target.lerpVectors(CAM.t0,CAM.t1,k);if(CAM.t>=1)CAM=null;}
+  controls.update();renderer.render(scene,camera);
+  const w=host.clientWidth,h=host.clientHeight,showTags=!G.items.length;
+  WINGS.forEach((W,i)=>{const el=tags[i];if(!showTags){el.hidden=true;return;}tmp.copy(W.tipPos).add(W.hW.position);proj.copy(tmp).project(camera);if(proj.z>1){el.hidden=true;return;}el.hidden=false;el.style.left=((proj.x+1)/2*w)+"px";el.style.top=((1-proj.y)/2*h)+"px";});
+  proj.set(150,0,-110).project(camera);fwdTag.hidden=!showTags||proj.z>1;fwdTag.style.left=((proj.x+1)/2*w)+"px";fwdTag.style.top=((1-proj.y)/2*h)+"px";
+  $("speedNote").hidden=!showTags;
+  requestAnimationFrame(frame);
+}
+if(!reduce)setPlay(true);
+applySteps();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>

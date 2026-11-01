@@ -1,0 +1,68 @@
+---
+/** Headline figures. Graph-backed tiles update live with the calculation panel. */
+import { type CalcNode, evaluate, formatValue, limitState } from "../engine/graph";
+import { projectGraph } from "../engine/project-graph";
+import { keyNumbers, values } from "../spec";
+import SectionHead from "./ui/SectionHead.astro";
+
+const results = evaluate(projectGraph);
+const nodes: readonly CalcNode[] = projectGraph.nodes;
+
+const tiles = keyNumbers.map((tile) => {
+  const [kind, id] = tile.ref.split(":") as ["node" | "value", string];
+  if (kind === "node") {
+    const node = nodes.find((n) => n.id === id);
+    if (!node) throw new Error(`keyNumbers: unknown graph node "${id}"`);
+    const value = results[id] ?? Number.NaN;
+    return { ...tile, id, live: true, value, unit: node.unit, digits: node.digits ?? 2, state: limitState(node.limit, value) };
+  }
+  const entry = values[id as keyof typeof values];
+  if (!entry) throw new Error(`keyNumbers: unknown spec value "${id}"`);
+  return { ...tile, id, live: false, value: entry.value, unit: entry.unit, digits: 1, state: "none" as const };
+});
+---
+
+<section class="grid gap-4" data-key-numbers>
+  <SectionHead eyebrow="Key numbers" title="Size, weight and performance">
+    Desk estimates from the spec and the engine. Amber or red borders mark values near or over their limits.
+  </SectionHead>
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
+    {
+      tiles.map((t) => (
+        <div
+          data-tile={t.live ? t.id : undefined}
+          data-state={t.state}
+          class="grid content-start gap-1 rounded-[10px] border border-line bg-panel px-4 py-3.5 data-[state=near]:border-warn data-[state=over]:border-bad"
+        >
+          <div class="text-[12.5px] text-muted">{t.label}</div>
+          <div class="font-display text-[28px] leading-tight font-semibold tabular-nums">
+            <span data-tile-value>{formatValue(t.value, t.digits)}</span>
+            <small class="text-[15px] font-medium text-muted"> {t.unit}</small>
+          </div>
+          <div class="text-[12.5px] text-muted">{t.note}</div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  import { type CalcNode, formatValue, limitState } from "../engine/graph";
+  import { projectGraph } from "../engine/project-graph";
+  import { CALC_EVENT } from "../events";
+
+  const nodes: readonly CalcNode[] = projectGraph.nodes;
+  const tiles = document.querySelectorAll<HTMLElement>("[data-tile]");
+  document.addEventListener(CALC_EVENT, (ev) => {
+    const results = (ev as CustomEvent<Record<string, number>>).detail;
+    for (const tile of tiles) {
+      const id = tile.dataset.tile ?? "";
+      const node = nodes.find((n) => n.id === id);
+      const value = results[id];
+      if (!node || value === undefined) continue;
+      const out = tile.querySelector("[data-tile-value]");
+      if (out) out.textContent = formatValue(value, node.digits ?? 2);
+      tile.dataset.state = limitState(node.limit, value);
+    }
+  });
+</script>
