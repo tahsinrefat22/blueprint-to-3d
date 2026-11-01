@@ -22,6 +22,8 @@ export interface StageOptions {
   readonly position: Vector3;
   /** Ground grid: size (mm), divisions, and the z height of the ground plane. */
   readonly ground: { readonly size: number; readonly divisions: number; readonly z: number };
+  /** Allowed camera distance to the target (mm); OrbitControls enforces it for wheel and pinch. */
+  readonly zoom: { readonly minDistance: number; readonly maxDistance: number };
 }
 
 export interface Stage {
@@ -75,8 +77,8 @@ export function createStage(host: HTMLElement, options: StageOptions): Stage {
   controls.target.copy(options.target);
   controls.enableDamping = true;
   controls.dampingFactor = 0.09;
-  controls.minDistance = 40;
-  controls.maxDistance = 4000;
+  controls.minDistance = options.zoom.minDistance;
+  controls.maxDistance = options.zoom.maxDistance;
   controls.update();
 
   let grid: GridHelper | null = null;

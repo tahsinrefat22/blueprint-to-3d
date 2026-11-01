@@ -34,6 +34,8 @@ Add tests as the project grows:
    - the mechanism playing and paused, and the controls moving it
    - each explode step, "Explode all", and "Explode with labels", including entering the grid directly from "Explode all" and reassembling
    - hover tooltip, click-select (highlight, info panel, legend)
+   - Zoom: − and + step in and out, stop at the range ends (buttons disable), the wheel obeys the same limits, and the readout updates
+   - Full screen: the model fills the screen and stays sharp, orbiting and the views still work, and Esc or "Exit full screen" restores the layout
    - the calculation panel: move inputs, confirm affected rows, limit pills, tiles and 3D rescaling update
    - light and dark (`document.documentElement.dataset.theme = "light" | "dark"`)
    - phone width, 390 px (an iframe of the page works if the window can't resize): no horizontal scroll (`scrollWidth === clientWidth`)

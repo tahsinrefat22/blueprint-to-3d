@@ -5,7 +5,7 @@
  * The render loop is on demand: it runs while the mechanism plays, something eases, the camera
  * flies or the controls damp, and stops otherwise (and while the viewer is off-screen).
  */
-import { Color } from "three";
+import { Color, Vector3 } from "three";
 import { evaluate, formatValue } from "../engine/graph";
 import { projectGraph } from "../engine/project-graph";
 import { CALC_EVENT } from "../events";
@@ -25,6 +25,7 @@ import {
   tags,
   type ViewName,
   views,
+  zoom,
 } from "./project";
 import { PartRegistry } from "./registry";
 import { createStage, webglAvailable } from "./scene";
@@ -62,7 +63,7 @@ export function mountViewer(root: HTMLElement): () => void {
   }
 
   const reduce = prefersReducedMotion();
-  const stage = createStage(host, { target: cameraTarget, position: views.iso, ground });
+  const stage = createStage(host, { target: cameraTarget, position: views.iso, ground, zoom });
   const { scene, camera, controls, renderer } = stage;
   const registry = new PartRegistry();
   const explode = new ExplodeController(explodeGroups);
@@ -242,6 +243,7 @@ export function mountViewer(root: HTMLElement): () => void {
     if (!grid.active) return;
     grid.exit();
     host.dataset.grid = "false";
+    controls.maxDistance = zoom.maxDistance;
     flyToView("iso");
   };
   const enterGrid = (): void => {
@@ -253,6 +255,8 @@ export function mountViewer(root: HTMLElement): () => void {
       [width, height] = stage.resize();
       grid.enter();
       const pose = grid.fit(camera);
+      // The laid-out grid can need more distance than the normal zoom range allows.
+      controls.maxDistance = Math.max(zoom.maxDistance, pose.position.distanceTo(pose.target) * 1.5);
       rig.flyTo(pose.position, pose.target, 1.1, reduce);
       updateSteps();
       invalidate();
@@ -291,6 +295,70 @@ export function mountViewer(root: HTMLElement): () => void {
     });
   }
 
+  // ---------- full screen ----------
+  // The stage (canvas, view buttons, speed note) goes full screen; the side panel stays on the page.
+  // Where the Fullscreen API is missing (iPhone Safari) or the request is refused, the stage fills
+  // the browser window instead ("window" mode), closed with the button or Esc.
+  const stageEl = q<HTMLElement>(root, "[data-stage]");
+  const fullscreenBtn = q<HTMLButtonElement>(root, "[data-fullscreen-toggle]");
+  let windowMode = false;
+  const showFullscreen = (on: boolean): void => {
+    host.dataset.fullscreen = String(on);
+    if (fullscreenBtn) {
+      fullscreenBtn.textContent = on ? "Exit full screen" : "Full screen";
+      fullscreenBtn.setAttribute("aria-pressed", String(on));
+    }
+    invalidate();
+  };
+  const setWindowMode = (on: boolean): void => {
+    windowMode = on;
+    if (stageEl) stageEl.dataset.windowFullscreen = String(on);
+    document.documentElement.classList.toggle("overflow-hidden", on);
+    showFullscreen(on);
+  };
+  fullscreenBtn?.addEventListener("click", () => {
+    if (!stageEl) return;
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else if (windowMode) setWindowMode(false);
+    else if (document.fullscreenEnabled) stageEl.requestFullscreen().catch(() => setWindowMode(true));
+    else setWindowMode(true);
+  });
+  const onFullscreenChange = (): void =>
+    showFullscreen(stageEl !== null && document.fullscreenElement === stageEl);
+  const onEscape = (ev: KeyboardEvent): void => {
+    if (ev.key === "Escape" && windowMode) setWindowMode(false);
+  };
+  document.addEventListener("fullscreenchange", onFullscreenChange);
+  document.addEventListener("keydown", onEscape);
+
+  // ---------- zoom ----------
+  // The +/- buttons step the camera distance by zoom.step inside [minDistance, maxDistance], the same
+  // range OrbitControls enforces for the wheel. The readout is relative to the 3/4 view distance.
+  const zoomInBtn = q<HTMLButtonElement>(root, "[data-zoom-in]");
+  const zoomOutBtn = q<HTMLButtonElement>(root, "[data-zoom-out]");
+  const zoomLevel = q<HTMLElement>(root, "[data-zoom-level]");
+  const baseDistance = views.iso.distanceTo(cameraTarget);
+  const zoomDir = new Vector3();
+  const zoomTo = (distance: number): void => {
+    const clamped = Math.min(controls.maxDistance, Math.max(controls.minDistance, distance));
+    zoomDir.subVectors(camera.position, controls.target).normalize();
+    const target = controls.target.clone();
+    rig.flyTo(target.clone().addScaledVector(zoomDir, clamped), target, 0.25, reduce);
+    invalidate();
+  };
+  const updateZoomUi = (): void => {
+    const distance = camera.position.distanceTo(controls.target);
+    if (zoomLevel) zoomLevel.textContent = `${Math.round((baseDistance / distance) * 100)}%`;
+    if (zoomInBtn) zoomInBtn.disabled = distance <= controls.minDistance * 1.001;
+    if (zoomOutBtn) zoomOutBtn.disabled = distance >= controls.maxDistance * 0.999;
+  };
+  zoomInBtn?.addEventListener("click", () => zoomTo(camera.position.distanceTo(controls.target) / zoom.step));
+  zoomOutBtn?.addEventListener("click", () =>
+    zoomTo(camera.position.distanceTo(controls.target) * zoom.step),
+  );
+  controls.addEventListener("change", updateZoomUi);
+  updateZoomUi();
+
   // ---------- calculation panel ----------
   const onCalc = (ev: Event): void => {
     state.calc = (ev as CustomEvent<Record<string, number>>).detail;
@@ -306,6 +374,9 @@ export function mountViewer(root: HTMLElement): () => void {
   return () => {
     cancelAnimationFrame(raf);
     document.removeEventListener(CALC_EVENT, onCalc);
+    document.removeEventListener("fullscreenchange", onFullscreenChange);
+    document.removeEventListener("keydown", onEscape);
+    document.documentElement.classList.remove("overflow-hidden");
     visibility.disconnect();
     detachPicking();
     grid.teardown();

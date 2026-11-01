@@ -15,6 +15,19 @@
 | 9 | `Sources` | `sources` | automatic |
 | 10 | `Footer` | — | adjust if the project keeps files elsewhere |
 
+## Viewer side panel order
+
+Keep the side panel in this order, top to bottom:
+
+1. Play/pause, reset and the mechanism controls (`viewerControls`)
+2. Take it apart (step, explode all, explode with labels, caption)
+3. The part legend (one chip per catalogue part)
+4. **The part details (info panel), directly below the legend**
+
+The 3D stage itself carries the camera-view buttons (top left), a **Full screen** button (top right), the **zoom − / + buttons with a % readout** (bottom left) and the speed note (bottom right). Every project keeps the full-screen and zoom controls, with the zoom range set from that model's size (`zoom` in `model/project.ts`).
+
+The details go under the legend on purpose: the user picks a part from the chips (or clicks it in the model) and reads about it right underneath, without the list jumping around. The empty-state text says "pick one above". `Viewer.astro` in the template already follows this order. Don't move the info panel above the legend.
+
 ## Writing the words
 
 DFLY's text is a large part of why it works. Every sentence carries a number, a reason or a status. Imitate that:

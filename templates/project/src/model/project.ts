@@ -42,6 +42,14 @@ export type ViewName = keyof typeof views;
 
 export const ground = { size: 500, divisions: 20, z: 0 } as const;
 
+/**
+ * Zoom range: camera distance to the target (mm), for the wheel and the +/- buttons alike.
+ * Pick it from the model's size: minDistance close enough to read the smallest detail without the
+ * camera entering parts, maxDistance far enough to see the whole model with margin. `step` is the
+ * distance factor per button press. 100 % in the readout is the 3/4 view distance.
+ */
+export const zoom = { minDistance: 120, maxDistance: 1100, step: 1.25 } as const;
+
 /** Where the labelled grid is laid out (body frame, mm). */
 export const gridCentre = new Vector3(0, 0, 40);
 

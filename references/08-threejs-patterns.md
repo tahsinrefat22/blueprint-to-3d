@@ -85,8 +85,10 @@ It's generic. It clones representatives with their world matrices baked in, scal
 ## 8. Picking, selection, labels
 
 - Picking uses a 5 px click-vs-drag threshold. Hover shows the part name, and a click selects it: the part's materials are highlighted, the info panel opens, and its legend chip is pressed.
-- The info panels are rendered at build time from the catalogue (`Viewer.astro`), so there's no `innerHTML` at runtime.
+- The info panels are rendered at build time from the catalogue (`Viewer.astro`), so there's no `innerHTML` at runtime. They sit **below the part legend** in the side panel (see `09-page-sections.md`, "Viewer side panel order").
 - Screen tags (`labels.ts`) hide when behind the camera or outside the viewport.
+- **Zoom range:** `zoom` in `model/project.ts` sets the allowed camera distance (`minDistance`, `maxDistance`, mm) and the `step` factor per button press. OrbitControls enforces the range for the wheel and pinch. The **−** / **+** buttons (bottom left of the stage) fly the camera in or out by `step` inside that range, disable themselves at each end, and show a readout where 100 % is the 3/4 view distance. Set the range from the model's size for every project: close enough to read the smallest detail without entering parts, far enough to see the whole model. `tests/viewer-config.test.ts` fails if a camera preset starts outside it. The labelled grid temporarily widens `maxDistance` so the whole grid fits, and restores it on exit.
+- **Full screen:** a "Full screen" button in the top-right corner of the stage puts the stage (canvas, view buttons, labels, speed note) into browser full screen with the Fullscreen API. Esc or "Exit full screen" returns. The viewport gets `data-fullscreen="true"` and fills the screen (`data-[fullscreen=true]:h-dvh!`). The existing `ResizeObserver` re-sizes the renderer, so nothing else changes. Where the Fullscreen API is missing (iPhone Safari) or the browser refuses the request, the stage falls back to filling the browser window (`data-window-fullscreen="true"`: fixed, inset 0, page scroll locked), closed by the button or Esc. Already wired in `model/index.ts` and `Viewer.astro`; keep it in every project.
 
 ## 9. Performance rules
 
