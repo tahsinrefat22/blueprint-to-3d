@@ -32,7 +32,8 @@ The Astro CLI runs on Bun's runtime: `bun --bun astro …`. This avoids Astro's 
 │   │   ├── project-graph.ts   THIS project's calc inputs, nodes and limits
 │   │   └── project-clearance.ts  THIS project's swept clearance checks
 │   ├── model/                 three.js
-│   │   ├── index.ts           mountViewer(): DOM wiring and the on-demand render loop
+│   │   ├── index.ts           mountViewer(): DOM wiring and the per-frame tick
+│   │   ├── loop.ts            on-demand frame loop; the only place render frames are scheduled
 │   │   ├── scene.ts           renderer, PMREM environment, camera, controls, ground
 │   │   ├── frames.ts          body frame, LocalFrame (right-handed check)
 │   │   ├── primitives.ts      geometry cache, bar/setBar, gearGeometry

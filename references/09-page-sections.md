@@ -4,7 +4,7 @@
 
 | # | Component | Data it reads | What to write per project |
 |---|---|---|---|
-| 1 | `Header` | `project`, mass total, `massTarget` | eyebrow (what it is), title, phase, stage, as-of date, hardware-measured status, lede (how to interact, plus the honesty line about fidelity) |
+| 1 | `Header` | `project`, mass total, `massTarget` | eyebrow (what it is), title, phase, stage, as-of date, hardware-measured status, lede (how to interact: drag to orbit, Ctrl + drag or right-drag to pan, scroll or − / + to zoom; plus the honesty line about fidelity) |
 | 2 | `Viewer` | `parts`, `values`, `viewerControls` + `model/` | modules, explode groups, views, tags |
 | 3 | `CalcPanel` | `projectGraph` | inputs, nodes, limits, help text with formula and source |
 | 4 | `KeyNumbers` | `keyNumbers` | 4–8 tiles for the design drivers; notes that explain each one |
@@ -24,7 +24,7 @@ Keep the side panel in this order, top to bottom:
 3. The part legend (one chip per catalogue part)
 4. **The part details (info panel), directly below the legend**
 
-The 3D stage itself carries the camera-view buttons (top left), a **Full screen** button (top right), the **zoom − / + buttons with a % readout** (bottom left) and the speed note (bottom right). Every project keeps the full-screen and zoom controls, with the zoom range set from that model's size (`zoom` in `model/project.ts`).
+The 3D stage itself carries the camera-view buttons (top left: 3/4, Front, Rear, Left, Right, Top, Bottom), a **Full screen** button (top right), the **zoom − / + buttons with a % readout** (bottom left) and the speed note (bottom right). Every project keeps the full-screen and zoom controls, with the zoom range set from that model's size (`zoom` in `model/project.ts`).
 
 The details go under the legend on purpose: the user picks a part from the chips (or clicks it in the model) and reads about it right underneath, without the list jumping around. The empty-state text says "pick one above". `Viewer.astro` in the template already follows this order. Don't move the info panel above the legend.
 

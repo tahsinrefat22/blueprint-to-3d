@@ -5,7 +5,7 @@ export const project = {
   title: "__TITLE__",
   slug: "__SLUG__",
   eyebrow: "Template demo: geared crank-rocker rig",
-  lede: "Drag to orbit, scroll to zoom. Play the mechanism, take it apart one layer at a time, or press Explode with labels to lay every part out with its name and the files that hold its numbers. Click any part for details. This is the template demo; every value is a placeholder.",
+  lede: "Drag to orbit, Ctrl + drag (or right-drag) to pan, scroll or use − / + to zoom. Play the mechanism, take it apart one layer at a time, or press Explode with labels to lay every part out with its name and the files that hold its numbers. Click any part for details. This is the template demo; every value is a placeholder.",
   phase: "7, Scaffold",
   stage: "Template demo",
   asOf: "__DATE__",

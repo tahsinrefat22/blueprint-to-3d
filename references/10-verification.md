@@ -30,7 +30,8 @@ Add tests as the project grows:
 1. `bun run build && bun run preview -- --port 4399 --host 127.0.0.1`. In Astro 7 it detaches; stop it later with `bun --bun astro preview stop`.
 2. Open the page in a browser: Claude in Chrome if available (read `anthropic-skills:chrome-browser` first), otherwise Playwright headless screenshots.
 3. Check and screenshot:
-   - 3/4, front, side and top views
+   - the 3/4 view and all six axis views (front, rear, left, right, top, bottom), each showing the expected face
+   - Ctrl + left-drag pans in the drag direction instead of rotating (right-drag too), and a view button resets the pan
    - the mechanism playing and paused, and the controls moving it
    - each explode step, "Explode all", and "Explode with labels", including entering the grid directly from "Explode all" and reassembling
    - hover tooltip, click-select (highlight, info panel, legend)
@@ -39,6 +40,7 @@ Add tests as the project grows:
    - the calculation panel: move inputs, confirm affected rows, limit pills, tiles and 3D rescaling update
    - light and dark (`document.documentElement.dataset.theme = "light" | "dark"`)
    - phone width, 390 px (an iframe of the page works if the window can't resize): no horizontal scroll (`scrollWidth === clientWidth`)
+   - performance: drag the model around for a few seconds while the mechanism plays; the animation keeps its speed and the page stays smooth (no frame build-up)
    - the console: no errors
 4. **Look** at the screenshots. Passing tests are not proof that it looks right: a flipped axis, a part floating 10 mm off its mount, or labels overlapping the model only show up visually.
 

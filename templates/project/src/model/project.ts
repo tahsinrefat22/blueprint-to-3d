@@ -31,11 +31,24 @@ export const explodeGroups: readonly ExplodeGroupDef[] = [
 
 export const cameraTarget = new Vector3(10, 0, 50);
 
+/** Distance (mm) from the target for the six axis views. Must sit inside the zoom range. */
+const viewDistance = 520;
+/** A camera position `viewDistance` from the target along the body-frame direction (x, y, z). */
+const along = (x: number, y: number, z: number): Vector3 =>
+  new Vector3(x, y, z).normalize().multiplyScalar(viewDistance).add(cameraTarget);
+
+/**
+ * Camera presets. Body frame: x forward, y left, z up. The six axis views come in opposite pairs;
+ * top and bottom lean 0.1° off vertical so OrbitControls (camera.up = +z) never sees a degenerate pose.
+ */
 export const views = {
   iso: new Vector3(240, 285, 175),
-  front: new Vector3(520, 0, 60),
-  side: new Vector3(10, 520, 60),
-  top: new Vector3(10, 0.01, 560),
+  front: along(1, 0, 0),
+  rear: along(-1, 0, 0),
+  left: along(0, 1, 0),
+  right: along(0, -1, 0),
+  top: along(0.002, 0, 1),
+  bottom: along(0.002, 0, -1),
 } as const;
 
 export type ViewName = keyof typeof views;

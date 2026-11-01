@@ -14,6 +14,7 @@ import { CameraRig } from "./camera";
 import { ExplodeController } from "./explode";
 import { GridExplode, type GridLabel } from "./grid";
 import { ScreenLabels } from "./labels";
+import { createFrameLoop } from "./loop";
 import { attachPicking } from "./picking";
 import { disposeGeometryCache } from "./primitives";
 import {
@@ -87,16 +88,10 @@ export function mountViewer(root: HTMLElement): () => void {
   const speedNote = q<HTMLElement>(root, "[data-speed-note]");
 
   // ---------- render loop ----------
-  let raf = 0;
-  let last = 0;
-  let onScreen = true;
   let width = host.clientWidth;
   let height = host.clientHeight;
 
-  const frame = (now: number): void => {
-    raf = 0;
-    const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
-    last = now;
+  const tick = (dt: number): boolean => {
     if (state.playing) state.time += dt;
     const moduleState = { time: state.time, controls: state.controls, calc: state.calc };
     for (const module of modules) module.update(moduleState);
@@ -114,13 +109,11 @@ export function mountViewer(root: HTMLElement): () => void {
 
     renderer.render(scene, camera);
     labels.update(camera, width, height);
-
-    if (busy && onScreen) raf = requestAnimationFrame(frame);
-    else last = 0;
+    return busy;
   };
-  const invalidate = (): void => {
-    if (!raf && onScreen) raf = requestAnimationFrame(frame);
-  };
+  // All redraw requests go through the loop, which keeps at most one frame pending (see loop.ts).
+  const loop = createFrameLoop(tick);
+  const invalidate = (): void => loop.request();
   controls.addEventListener("change", invalidate);
   stage.onResize(() => {
     width = host.clientWidth;
@@ -128,8 +121,7 @@ export function mountViewer(root: HTMLElement): () => void {
     invalidate();
   });
   const visibility = new IntersectionObserver(([entry]) => {
-    onScreen = entry?.isIntersecting ?? true;
-    if (onScreen) invalidate();
+    loop.setActive(entry?.isIntersecting ?? true);
   });
   visibility.observe(host);
 
@@ -372,7 +364,7 @@ export function mountViewer(root: HTMLElement): () => void {
   invalidate();
 
   return () => {
-    cancelAnimationFrame(raf);
+    loop.dispose();
     document.removeEventListener(CALC_EVENT, onCalc);
     document.removeEventListener("fullscreenchange", onFullscreenChange);
     document.removeEventListener("keydown", onEscape);

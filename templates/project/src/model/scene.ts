@@ -56,7 +56,7 @@ export function createStage(host: HTMLElement, options: StageOptions): Stage {
   renderer.domElement.setAttribute("role", "img");
   renderer.domElement.setAttribute(
     "aria-label",
-    "Interactive 3D model: drag to orbit, scroll to zoom, click a part",
+    "Interactive 3D model: drag to orbit, Ctrl + drag to pan, scroll to zoom, click a part",
   );
   host.appendChild(renderer.domElement);
 
@@ -76,6 +76,10 @@ export function createStage(host: HTMLElement, options: StageOptions): Stage {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.target.copy(options.target);
   controls.enableDamping = true;
+  // Panning: Ctrl/⌘/Shift + left-drag, right-drag, or a two-finger drag. Screen-space panning moves
+  // the view in the direction the pointer travels. Set explicitly so a library default can't change it.
+  controls.enablePan = true;
+  controls.screenSpacePanning = true;
   controls.dampingFactor = 0.09;
   controls.minDistance = options.zoom.minDistance;
   controls.maxDistance = options.zoom.maxDistance;
